@@ -36,7 +36,7 @@ public class ClickCommand extends Command {
     public void execute(String label, IArgConsumer args) throws CommandException {
         args.requireMax(0);
         baritone.openClick();
-        logDirect("aight dude");
+        logDirect("好样的, 伙计");
     }
 
     @Override
@@ -46,15 +46,15 @@ public class ClickCommand extends Command {
 
     @Override
     public String getShortDesc() {
-        return "Open click";
+        return "点击前往位置";
     }
 
     @Override
     public List<String> getLongDesc() {
         return Arrays.asList(
-                "Opens click dude",
+                "点击前往指定位置",
                 "",
-                "Usage:",
+                "用法:",
                 "> click"
         );
     }

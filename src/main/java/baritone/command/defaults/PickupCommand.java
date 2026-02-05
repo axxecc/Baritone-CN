@@ -47,10 +47,10 @@ public class PickupCommand extends Command {
         }
         if (collecting.isEmpty()) {
             baritone.getFollowProcess().pickup(stack -> true);
-            logDirect("Picking up all items");
+            logDirect("收集所有物品");
         } else {
             baritone.getFollowProcess().pickup(stack -> collecting.contains(stack.getItem()));
-            logDirect("Picking up these items:");
+            logDirect("收集这些物品:");
             collecting.stream().map(BuiltInRegistries.ITEM::getKey).map(ResourceLocation::toString).forEach(this::logDirect);
         }
     }
@@ -68,15 +68,15 @@ public class PickupCommand extends Command {
 
     @Override
     public String getShortDesc() {
-        return "Pickup items";
+        return "拾取物品";
     }
 
     @Override
     public List<String> getLongDesc() {
         return Arrays.asList(
-                "Usage:",
-                "> pickup - Pickup anything",
-                "> pickup <item1> <item2> <...> - Pickup certain items"
+                "用法:",
+                "> pickup - 什么都拿起来",
+                "> pickup <物品> <物品> <...> - 拾取某些物品"
         );
     }
 }

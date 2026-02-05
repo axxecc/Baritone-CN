@@ -74,16 +74,16 @@ public class FollowCommand extends Command {
             );
         }
         if (group != null) {
-            logDirect(String.format("Following all %s", group.name().toLowerCase(Locale.US)));
+            logDirect(String.format("跟随所有 %s", group.name().toLowerCase(Locale.SIMPLIFIED_CHINESE)));
         } else {
             if (classes.isEmpty()) {
                 if (entities.isEmpty()) throw new NoEntitiesException();
-                logDirect("Following these entities:");
+                logDirect("跟随这些实体:");
                 entities.stream()
                         .map(Entity::toString)
                         .forEach(this::logDirect);
             } else {
-                logDirect("Following these types of entities:");
+                logDirect("跟随这些类型的实体:");
                 classes.stream()
                         .map(BuiltInRegistries.ENTITY_TYPE::getKey)
                         .map(Objects::requireNonNull)
@@ -120,19 +120,19 @@ public class FollowCommand extends Command {
 
     @Override
     public String getShortDesc() {
-        return "Follow entity things";
+        return "跟随实体事件";
     }
 
     @Override
     public List<String> getLongDesc() {
         return Arrays.asList(
-                "The follow command tells Baritone to follow certain kinds of entities.",
+                "跟随命令告诉Baritone跟随某些类型的实体",
                 "",
-                "Usage:",
-                "> follow entities - Follows all entities.",
-                "> follow entity <entity1> <entity2> <...> - Follow certain entities (for example 'skeleton', 'horse' etc.)",
-                "> follow players - Follow players",
-                "> follow player <username1> <username2> <...> - Follow certain players"
+                "用法:",
+                "> follow entities - 跟随所有实体",
+                "> follow entity <实体> <实体> <...> - 跟随某些实体 (例如\"骷髅\", \"马\"等)",
+                "> follow players - 跟随玩家",
+                "> follow player <玩家> <玩家> <...> - 跟随某些玩家"
         );
     }
 
@@ -164,7 +164,7 @@ public class FollowCommand extends Command {
     public static class NoEntitiesException extends CommandErrorMessageException {
 
         protected NoEntitiesException() {
-            super("No valid entities in range!");
+            super("范围内无有效实体!");
         }
 
     }

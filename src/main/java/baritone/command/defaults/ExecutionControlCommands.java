@@ -76,19 +76,19 @@ public class ExecutionControlCommands {
 
                     @Override
                     public String displayName0() {
-                        return "Pause/Resume Commands";
+                        return "暂停/继续命令";
                     }
                 }
         );
-        pauseCommand = new Command(baritone, "pause", "p", "paws") {
+        pauseCommand = new Command(baritone, "pause", "p") {
             @Override
             public void execute(String label, IArgConsumer args) throws CommandException {
                 args.requireMax(0);
                 if (paused[0]) {
-                    throw new CommandInvalidStateException("Already paused");
+                    throw new CommandInvalidStateException("已经暂停了");
                 }
                 paused[0] = true;
-                logDirect("Paused");
+                logDirect("暂停");
             }
 
             @Override
@@ -98,31 +98,31 @@ public class ExecutionControlCommands {
 
             @Override
             public String getShortDesc() {
-                return "Pauses Baritone until you use resume";
+                return "暂停Baritone直到你使用恢复";
             }
 
             @Override
             public List<String> getLongDesc() {
                 return Arrays.asList(
-                        "The pause command tells Baritone to temporarily stop whatever it's doing.",
+                        "暂停命令让Baritone暂时停止正在做的事情",
                         "",
-                        "This can be used to pause pathing, building, following, whatever. A single use of the resume command will start it right back up again!",
+                        "这可以用来暂停路径、建造、跟随等作. 使用一次恢复命令, 它会立即重新启动!",
                         "",
-                        "Usage:",
+                        "用法:",
                         "> pause"
                 );
             }
         };
-        resumeCommand = new Command(baritone, "resume", "r", "unpause", "unpaws") {
+        resumeCommand = new Command(baritone, "resume", "r") {
             @Override
             public void execute(String label, IArgConsumer args) throws CommandException {
                 args.requireMax(0);
                 baritone.getBuilderProcess().resume();
                 if (!paused[0]) {
-                    throw new CommandInvalidStateException("Not paused");
+                    throw new CommandInvalidStateException("没有暂停");
                 }
                 paused[0] = false;
-                logDirect("Resumed");
+                logDirect("恢复");
             }
 
             @Override
@@ -132,15 +132,15 @@ public class ExecutionControlCommands {
 
             @Override
             public String getShortDesc() {
-                return "Resumes Baritone after a pause";
+                return "暂停后恢复Baritone";
             }
 
             @Override
             public List<String> getLongDesc() {
                 return Arrays.asList(
-                        "The resume command tells Baritone to resume whatever it was doing when you last used pause.",
+                        "恢复命令会告诉Baritone继续你上次使用暂停时正在做的事情",
                         "",
-                        "Usage:",
+                        "用法:",
                         "> resume"
                 );
             }
@@ -149,7 +149,7 @@ public class ExecutionControlCommands {
             @Override
             public void execute(String label, IArgConsumer args) throws CommandException {
                 args.requireMax(0);
-                logDirect(String.format("Baritone is %spaused", paused[0] ? "" : "not "));
+                logDirect(String.format("Baritone暂停状态 %spaused", paused[0] ? "" : "没有 "));
             }
 
             @Override
@@ -159,20 +159,20 @@ public class ExecutionControlCommands {
 
             @Override
             public String getShortDesc() {
-                return "Tells you if Baritone is paused";
+                return "告诉你Baritone是否暂停";
             }
 
             @Override
             public List<String> getLongDesc() {
                 return Arrays.asList(
-                        "The paused command tells you if Baritone is currently paused by use of the pause command.",
+                        "暂停命令通过暂停命令告诉你Baritone是否正在暂停",
                         "",
-                        "Usage:",
+                        "用法:",
                         "> paused"
                 );
             }
         };
-        cancelCommand = new Command(baritone, "cancel", "c", "stop") {
+        cancelCommand = new Command(baritone, "cancel", "c") {
             @Override
             public void execute(String label, IArgConsumer args) throws CommandException {
                 args.requireMax(0);
@@ -180,7 +180,7 @@ public class ExecutionControlCommands {
                     paused[0] = false;
                 }
                 baritone.getPathingBehavior().cancelEverything();
-                logDirect("ok canceled");
+                logDirect("好的, 取消了");
             }
 
             @Override
@@ -190,15 +190,15 @@ public class ExecutionControlCommands {
 
             @Override
             public String getShortDesc() {
-                return "Cancel what Baritone is currently doing";
+                return "取消Baritone目前的活动";
             }
 
             @Override
             public List<String> getLongDesc() {
                 return Arrays.asList(
-                        "The cancel command tells Baritone to stop whatever it's currently doing.",
+                        "取消命令会告诉Baritone停止当前的活动",
                         "",
-                        "Usage:",
+                        "用法:",
                         "> cancel"
                 );
             }

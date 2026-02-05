@@ -46,7 +46,7 @@ public class RenderCommand extends Command {
                 ctx.world().getMaxBuildHeight(),
                 origin.z + renderDistance
         );
-        logDirect("Done");
+        logDirect("完成");
     }
 
     @Override
@@ -56,15 +56,15 @@ public class RenderCommand extends Command {
 
     @Override
     public String getShortDesc() {
-        return "Fix glitched chunks";
+        return "修复故障区块";
     }
 
     @Override
     public List<String> getLongDesc() {
         return Arrays.asList(
-                "The render command fixes glitched chunk rendering without having to reload all of them.",
+                "渲染命令可以修复块渲染的故障, 无需重新加载所有块",
                 "",
-                "Usage:",
+                "用法:",
                 "> render"
         );
     }

@@ -45,7 +45,7 @@ public class TunnelCommand extends Command {
             int depth = Integer.parseInt(args.getArgs().get(2).getValue());
 
             if (width < 1 || height < 2 || depth < 1 || height > ctx.world().getMaxBuildHeight()){
-                logDirect("Width and depth must at least be 1 block; Height must at least be 2 blocks, and cannot be greater than the build limit.");
+                logDirect("宽度和深度至少为1格: 高度至少为2格, 并且不能超过建造上限");
                 cont = false;
             }
 
@@ -74,9 +74,9 @@ public class TunnelCommand extends Command {
                         corner2 = new BlockPos(ctx.playerFeet().x - width / 2, ctx.playerFeet().y + height, ctx.playerFeet().z + depth);
                         break;
                     default:
-                        throw new IllegalStateException("Unexpected value: " + enumFacing);
+                        throw new IllegalStateException("意外的值: " + enumFacing);
                 }
-                logDirect(String.format("Creating a tunnel %s block(s) high, %s block(s) wide, and %s block(s) deep", height + 1, width + 1, depth));
+                logDirect(String.format("创建一个高 %s, 宽 %s, 深 %s 的隧道", height + 1, width + 1, depth));
                 baritone.getBuilderProcess().clearArea(corner1, corner2);
             }
         } else {
@@ -85,7 +85,7 @@ public class TunnelCommand extends Command {
                     ctx.player().getDirection()
             );
             baritone.getCustomGoalProcess().setGoalAndPath(goal);
-            logDirect(String.format("Goal: %s", goal.toString()));
+            logDirect(String.format("目标: %s", goal.toString()));
         }
     }
 
@@ -96,17 +96,17 @@ public class TunnelCommand extends Command {
 
     @Override
     public String getShortDesc() {
-        return "Set a goal to tunnel in your current direction";
+        return "设定一个目标, 在你当前的方向上开始挖掘";
     }
 
     @Override
     public List<String> getLongDesc() {
         return Arrays.asList(
-                "The tunnel command sets a goal that tells Baritone to mine completely straight in the direction that you're facing.",
+                "tunnel 命令设置一个目标, 告诉 Baritone 完全沿你面向的方向直线挖掘",
                 "",
-                "Usage:",
-                "> tunnel - No arguments, mines in a 1x2 radius.",
-                "> tunnel <height> <width> <depth> - Tunnels in a user defined height, width and depth."
+                "用法:",
+                "> tunnel - 无参数, 我的隧道是1x2大小",
+                "> tunnel <高> <宽> <深> - 隧道具有用户自定义的高度, 宽度和深度"
         );
     }
 }

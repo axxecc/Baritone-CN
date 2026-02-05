@@ -32,7 +32,7 @@ import net.minecraft.world.level.block.AirBlock;
 public class SurfaceCommand extends Command {
 
     protected SurfaceCommand(IBaritone baritone) {
-        super(baritone, "surface", "top");
+        super(baritone, "surface");
     }
 
     @Override
@@ -44,7 +44,7 @@ public class SurfaceCommand extends Command {
         // Ensure this command will not run if you are above the surface level and the block above you is air
         // As this would imply that your are already on the open surface
         if (playerPos.getY() > surfaceLevel && ctx.world().getBlockState(playerPos.above()).getBlock() instanceof AirBlock) {
-            logDirect("Already at surface");
+            logDirect("已经在地表");
             return;
         }
 
@@ -55,12 +55,12 @@ public class SurfaceCommand extends Command {
 
             if (!(ctx.world().getBlockState(newPos).getBlock() instanceof AirBlock) && newPos.getY() > playerPos.getY()) {
                 Goal goal = new GoalBlock(newPos.above());
-                logDirect(String.format("Going to: %s", goal.toString()));
+                logDirect(String.format("前往: %s", goal.toString()));
                 baritone.getCustomGoalProcess().setGoalAndPath(goal);
                 return;
             }
         }
-        logDirect("No higher location found");
+        logDirect("未找到更高的位置");
     }
 
     @Override
@@ -70,19 +70,18 @@ public class SurfaceCommand extends Command {
 
     @Override
     public String getShortDesc() {
-        return "Used to get out of caves, mines, ...";
+        return "用来从洞穴, 矿井中出来, ...";
     }
 
     @Override
     public List<String> getLongDesc() {
         return Arrays.asList(
-                "The surface/top command tells Baritone to head towards the closest surface-like area.",
+                "surface 命令告诉 Baritone 朝最近的类似地表的区域移动",
                 "",
-                "This can be the surface or the highest available air space, depending on circumstances.",
+                "这可以是地面或最高可用的空域, 视具体情况而定",
                 "",
-                "Usage:",
-                "> surface - Used to get out of caves, mines, ...",
-                "> top - Used to get out of caves, mines, ..."
+                "用法:",
+                "> surface - 用来从洞穴, 矿井中出来, ..."
         );
     }
 }

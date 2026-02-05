@@ -42,14 +42,14 @@ public class ProcCommand extends Command {
         IPathingControlManager pathingControlManager = baritone.getPathingControlManager();
         IBaritoneProcess process = pathingControlManager.mostRecentInControl().orElse(null);
         if (process == null) {
-            throw new CommandInvalidStateException("No process in control");
+            throw new CommandInvalidStateException("没有任何进程控制");
         }
         logDirect(String.format(
-                "Class: %s\n" +
-                        "Priority: %f\n" +
-                        "Temporary: %b\n" +
-                        "Display name: %s\n" +
-                        "Last command: %s",
+                "类: %s\n" +
+                        "优先级: %f\n" +
+                        "临时: %b\n" +
+                        "显示名称: %s\n" +
+                        "最后的命令: %s",
                 process.getClass().getTypeName(),
                 process.priority(),
                 process.isTemporary(),
@@ -57,7 +57,7 @@ public class ProcCommand extends Command {
                 pathingControlManager
                         .mostRecentCommand()
                         .map(PathingCommand::toString)
-                        .orElse("None")
+                        .orElse("无")
         ));
     }
 
@@ -68,18 +68,18 @@ public class ProcCommand extends Command {
 
     @Override
     public String getShortDesc() {
-        return "View process state information";
+        return "查看进程状态信息";
     }
 
     @Override
     public List<String> getLongDesc() {
         return Arrays.asList(
-                "The proc command provides miscellaneous information about the process currently controlling Baritone.",
+                "程序指令提供了关于当前控制Baritone进程的杂项信息",
                 "",
-                "You are not expected to understand this if you aren't familiar with how Baritone works.",
+                "如果你不熟悉Baritone的工作原理, 你是不被期望理解的",
                 "",
-                "Usage:",
-                "> proc - View process information, if present"
+                "用法:",
+                "> proc - 如果存在, 可以查看流程信息"
         );
     }
 }

@@ -30,13 +30,13 @@ import java.util.stream.Stream;
 public class RepackCommand extends Command {
 
     public RepackCommand(IBaritone baritone) {
-        super(baritone, "repack", "rescan");
+        super(baritone, "repack");
     }
 
     @Override
     public void execute(String label, IArgConsumer args) throws CommandException {
         args.requireMax(0);
-        logDirect(String.format("Queued %d chunks for repacking", BaritoneAPI.getProvider().getWorldScanner().repack(ctx)));
+        logDirect(String.format("排队的 %d 块用于重新打包", BaritoneAPI.getProvider().getWorldScanner().repack(ctx)));
     }
 
     @Override
@@ -46,16 +46,16 @@ public class RepackCommand extends Command {
 
     @Override
     public String getShortDesc() {
-        return "Re-cache chunks";
+        return "重新缓存区块";
     }
 
     @Override
     public List<String> getLongDesc() {
         return Arrays.asList(
-                "Repack chunks around you. This basically re-caches them.",
+                "重新填充你周围的区块, 这基本上是重新缓存这些文件",
                 "",
-                "Usage:",
-                "> repack - Repack chunks."
+                "用法:",
+                "> repack - 重新打包区块"
         );
     }
 }

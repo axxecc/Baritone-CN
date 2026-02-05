@@ -40,7 +40,7 @@ public class PathCommand extends Command {
         args.requireMax(0);
         BaritoneAPI.getProvider().getWorldScanner().repack(ctx);
         customGoalProcess.path();
-        logDirect("Now pathing");
+        logDirect("开始规划路径");
     }
 
     @Override
@@ -50,16 +50,16 @@ public class PathCommand extends Command {
 
     @Override
     public String getShortDesc() {
-        return "Start heading towards the goal";
+        return "开始朝目标走去";
     }
 
     @Override
     public List<String> getLongDesc() {
         return Arrays.asList(
-                "The path command tells Baritone to head towards the current goal.",
+                "路径指令告诉Baritone朝当前目标前进",
                 "",
-                "Usage:",
-                "> path - Start the pathing."
+                "用法:",
+                "> path - 开始规划路径"
         );
     }
 }

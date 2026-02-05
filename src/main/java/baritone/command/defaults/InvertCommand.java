@@ -42,7 +42,7 @@ public class InvertCommand extends Command {
         ICustomGoalProcess customGoalProcess = baritone.getCustomGoalProcess();
         Goal goal;
         if ((goal = customGoalProcess.getGoal()) == null) {
-            throw new CommandInvalidStateException("No goal");
+            throw new CommandInvalidStateException("无目标");
         }
         if (goal instanceof GoalInverted) {
             goal = ((GoalInverted) goal).origin;
@@ -50,7 +50,7 @@ public class InvertCommand extends Command {
             goal = new GoalInverted(goal);
         }
         customGoalProcess.setGoalAndPath(goal);
-        logDirect(String.format("Goal: %s", goal.toString()));
+        logDirect(String.format("目标: %s", goal.toString()));
     }
 
     @Override
@@ -60,16 +60,16 @@ public class InvertCommand extends Command {
 
     @Override
     public String getShortDesc() {
-        return "Run away from the current goal";
+        return "远离当前目标";
     }
 
     @Override
     public List<String> getLongDesc() {
         return Arrays.asList(
-                "The invert command tells Baritone to head away from the current goal rather than towards it.",
+                "反转指令告诉Baritone朝远离当前目标方向, 而不是靠近它",
                 "",
-                "Usage:",
-                "> invert - Invert the current goal."
+                "用法:",
+                "> invert - 反转当前目标"
         );
     }
 }
