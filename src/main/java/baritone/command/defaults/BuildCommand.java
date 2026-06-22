@@ -54,18 +54,17 @@ public class BuildCommand extends Command {
         if (!file.exists()) {
             if (file0.exists()) {
                 throw new CommandInvalidStateException(String.format(
-                        "Cannot load %s because I do not know which schematic format"
-                                + " that is. Please rename the file to include the correct"
-                                + " file extension.",
+                        "无法加载 %s, 无法确定原理图格式" +
+                                "请将文件重命名, 以包含正确的扩展名",
                         file));
             }
-            throw new CommandInvalidStateException("Cannot find " + file);
+            throw new CommandInvalidStateException("找不到 " + file);
         }
         if (!SchematicSystem.INSTANCE.getByFile(file).isPresent()) {
             StringJoiner formats = new StringJoiner(", ");
             SchematicSystem.INSTANCE.getFileExtensions().forEach(formats::add);
             throw new CommandInvalidStateException(String.format(
-                    "Unsupported schematic format. Reckognized file extensions are: %s",
+                    "不支持的原理图格式, 文件扩展名为: %s",
                     formats
             ));
         }
@@ -80,9 +79,9 @@ public class BuildCommand extends Command {
         }
         boolean success = baritone.getBuilderProcess().build(file.getName(), file, buildOrigin);
         if (!success) {
-            throw new CommandInvalidStateException("Couldn't load the schematic. Either your schematic is corrupt or this is a bug.");
+            throw new CommandInvalidStateException("无法加载原理图, 可能原理图损坏");
         }
-        logDirect(String.format("Successfully loaded schematic for building\nOrigin: %s", buildOrigin));
+        logDirect(String.format("成功加载用于建造的原理图\n来源: %s", buildOrigin));
     }
 
     @Override
@@ -98,17 +97,17 @@ public class BuildCommand extends Command {
 
     @Override
     public String getShortDesc() {
-        return "Build a schematic";
+        return "建造原理图";
     }
 
     @Override
     public List<String> getLongDesc() {
         return Arrays.asList(
-                "Build a schematic from a file.",
+                "从文件中建造原理图",
                 "",
-                "Usage:",
-                "> build <filename> - Loads and builds '<filename>.schematic'",
-                "> build <filename> <x> <y> <z> - Custom position"
+                "用法:",
+                "> build <文件名> - 加载并建造 '<文件名>.schematic'",
+                "> build <文件名> <x> <y> <z> - 自定义位置"
         );
     }
 }

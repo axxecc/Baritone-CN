@@ -75,7 +75,7 @@ public class InventoryPauserProcess extends BaritoneProcessHelper {
 
     @Override
     public String displayName0() {
-        return "inventory pauser";
+        return "库存暂停";
     }
 
     @Override

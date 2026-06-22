@@ -31,7 +31,7 @@ import java.util.stream.Stream;
 public class AxisCommand extends Command {
 
     public AxisCommand(IBaritone baritone) {
-        super(baritone, "axis", "highway");
+        super(baritone, "axis");
     }
 
     @Override
@@ -39,7 +39,7 @@ public class AxisCommand extends Command {
         args.requireMax(0);
         Goal goal = new GoalAxis();
         baritone.getCustomGoalProcess().setGoal(goal);
-        logDirect(String.format("Goal: %s", goal.toString()));
+        logDirect(String.format("目标: %s", goal.toString()));
     }
 
     @Override
@@ -49,15 +49,15 @@ public class AxisCommand extends Command {
 
     @Override
     public String getShortDesc() {
-        return "Set a goal to the axes";
+        return "设定一个目标";
     }
 
     @Override
     public List<String> getLongDesc() {
         return Arrays.asList(
-                "The axis command sets a goal that tells Baritone to head towards the nearest axis. That is, X=0 or Z=0.",
+                "轴指令设定一个目标, 指示 Baritone 朝最近的轴方向前进 X=0 或 Z=0",
                 "",
-                "Usage:",
+                "用法:",
                 "> axis"
         );
     }

@@ -82,7 +82,7 @@ public class ExampleBaritoneControl extends Behavior implements Helper {
                     .withColor(ChatFormatting.WHITE)
                     .withHoverEvent(new HoverEvent(
                             HoverEvent.Action.SHOW_TEXT,
-                            Component.literal("Click to rerun command")
+                            Component.literal("点击返回命令")
                     ))
                     .withClickEvent(new ClickEvent(
                             ClickEvent.Action.RUN_COMMAND,

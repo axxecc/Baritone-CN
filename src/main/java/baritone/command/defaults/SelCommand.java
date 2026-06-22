@@ -91,35 +91,35 @@ public class SelCommand extends Command {
         }
         if (action == Action.POS1 || action == Action.POS2) {
             if (action == Action.POS2 && pos1 == null) {
-                throw new CommandInvalidStateException("Set pos1 first before using pos2");
+                throw new CommandInvalidStateException("先设置位置1再用位置2");
             }
             BetterBlockPos playerPos = ctx.viewerPos();
             BetterBlockPos pos = args.hasAny() ? args.getDatatypePost(RelativeBlockPos.INSTANCE, playerPos) : playerPos;
             args.requireMax(0);
             if (action == Action.POS1) {
                 pos1 = pos;
-                logDirect("Position 1 has been set");
+                logDirect("位置1已确定");
             } else {
                 manager.addSelection(pos1, pos);
                 pos1 = null;
-                logDirect("Selection added");
+                logDirect("新增位置");
             }
         } else if (action == Action.CLEAR) {
             args.requireMax(0);
             pos1 = null;
-            logDirect(String.format("Removed %d selections", manager.removeAllSelections().length));
+            logDirect(String.format("移除了 %d 的选择", manager.removeAllSelections().length));
         } else if (action == Action.UNDO) {
             args.requireMax(0);
             if (pos1 != null) {
                 pos1 = null;
-                logDirect("Undid pos1");
+                logDirect("取消位置1");
             } else {
                 ISelection[] selections = manager.getSelections();
                 if (selections.length < 1) {
-                    throw new CommandInvalidStateException("Nothing to undo!");
+                    throw new CommandInvalidStateException("没有什么可撤销的!");
                 } else {
                     pos1 = manager.removeSelection(selections[selections.length - 1]).pos1();
-                    logDirect("Undid pos2");
+                    logDirect("取消位置2");
                 }
             }
         } else if (action.isFillAction()) {
@@ -150,7 +150,7 @@ public class SelCommand extends Command {
             }
             ISelection[] selections = manager.getSelections();
             if (selections.length == 0) {
-                throw new CommandInvalidStateException("No selections");
+                throw new CommandInvalidStateException("没有选择");
             }
             BetterBlockPos origin = selections[0].min();
             CompositeSchematic composite = new CompositeSchematic(0, 0, 0);
@@ -196,15 +196,15 @@ public class SelCommand extends Command {
                 ISchematic schematic = create.apply(new FillSchematic(size.getX(), size.getY(), size.getZ(), type));
                 composite.put(schematic, min.x - origin.x, min.y - origin.y, min.z - origin.z);
             }
-            baritone.getBuilderProcess().build("Fill", composite, origin);
-            logDirect("Filling now");
+            baritone.getBuilderProcess().build("填充", composite, origin);
+            logDirect("现在正在填充");
         } else if (action == Action.COPY) {
             BetterBlockPos playerPos = ctx.viewerPos();
             BetterBlockPos pos = args.hasAny() ? args.getDatatypePost(RelativeBlockPos.INSTANCE, playerPos) : playerPos;
             args.requireMax(0);
             ISelection[] selections = manager.getSelections();
             if (selections.length < 1) {
-                throw new CommandInvalidStateException("No selections");
+                throw new CommandInvalidStateException("没有选择");
             }
             BlockStateInterface bsi = new BlockStateInterface(ctx);
             BetterBlockPos origin = selections[0].min();
@@ -233,27 +233,27 @@ public class SelCommand extends Command {
             }
             clipboard = composite;
             clipboardOffset = origin.subtract(pos);
-            logDirect("Selection copied");
+            logDirect("已复制所选内容");
         } else if (action == Action.PASTE) {
             BetterBlockPos playerPos = ctx.viewerPos();
             BetterBlockPos pos = args.hasAny() ? args.getDatatypePost(RelativeBlockPos.INSTANCE, playerPos) : playerPos;
             args.requireMax(0);
             if (clipboard == null) {
-                throw new CommandInvalidStateException("You need to copy a selection first");
+                throw new CommandInvalidStateException("你需要先复制一个选区");
             }
-            baritone.getBuilderProcess().build("Fill", clipboard, pos.offset(clipboardOffset));
-            logDirect("Building now");
+            baritone.getBuilderProcess().build("填充", clipboard, pos.offset(clipboardOffset));
+            logDirect("正在建造");
         } else if (action == Action.EXPAND || action == Action.CONTRACT || action == Action.SHIFT) {
             args.requireExactly(3);
             TransformTarget transformTarget = TransformTarget.getByName(args.getString());
             if (transformTarget == null) {
-                throw new CommandInvalidStateException("Invalid transform type");
+                throw new CommandInvalidStateException("无效的转换类型");
             }
             Direction direction = args.getDatatypeFor(ForDirection.INSTANCE);
             int blocks = args.getAs(Integer.class);
             ISelection[] selections = manager.getSelections();
             if (selections.length < 1) {
-                throw new CommandInvalidStateException("No selections found");
+                throw new CommandInvalidStateException("未找到任何选择");
             }
             selections = transformTarget.transform(selections);
             for (ISelection selection : selections) {
@@ -265,7 +265,7 @@ public class SelCommand extends Command {
                     manager.shift(selection, direction, blocks);
                 }
             }
-            logDirect(String.format("Transformed %d selections", selections.length));
+            logDirect(String.format("已转换 %d 个选中项", selections.length));
         }
     }
 
@@ -315,63 +315,63 @@ public class SelCommand extends Command {
 
     @Override
     public String getShortDesc() {
-        return "WorldEdit-like commands";
+        return "类似 WorldEdit 的命令";
     }
 
     @Override
     public List<String> getLongDesc() {
         return Arrays.asList(
-                "The sel command allows you to manipulate Baritone's selections, similarly to WorldEdit.",
+                "sel 命令允许你操作 Baritone 的选区, 类似于 WorldEdit",
                 "",
-                "Using these selections, you can clear areas, fill them with blocks, or something else.",
+                "使用这些选择, 你可以清理区域、用方块填充区域, 或者做其他操作",
                 "",
-                "The expand/contract/shift commands use a kind of selector to choose which selections to target. Supported ones are a/all, n/newest, and o/oldest.",
+                "expand/contract/shift命令使用一种选择器来选择要操作的选区. 支持的选择器有 a/all(全部), n/newest(最新) 和 o/oldest(最旧)",
                 "",
-                "Usage:",
-                "> sel pos1/p1/1 - Set position 1 to your current position.",
-                "> sel pos1/p1/1 <x> <y> <z> - Set position 1 to a relative position.",
-                "> sel pos2/p2/2 - Set position 2 to your current position.",
-                "> sel pos2/p2/2 <x> <y> <z> - Set position 2 to a relative position.",
+                "用法:",
+                "> sel 1 - 将 位置1 设置为你当前位置",
+                "> sel 1 <x> <y> <z> - 将 位置1 设置为相对位置",
+                "> sel 2 - 将 位置2 设置为你当前位置",
+                "> sel 2 <x> <y> <z> - 将 位置2 设置为相对位置",
                 "",
-                "> sel clear/c - Clear the selection.",
-                "> sel undo/u - Undo the last action (setting positions, creating selections, etc.)",
-                "> sel set/fill/s/f [block] - Completely fill all selections with a block.",
-                "> sel walls/w [block] - Fill in the walls of the selection with a specified block.",
-                "> sel shell/shl [block] - The same as walls, but fills in a ceiling and floor too.",
-                "> sel sphere/sph [block] - Fills the selection with a sphere bounded by the sides.",
-                "> sel hsphere/hsph [block] - The same as sphere, but hollow.",
-                "> sel cylinder/cyl [block] <axis> - Fills the selection with a cylinder bounded by the sides, oriented about the given axis. (default=y)",
-                "> sel hcylinder/hcyl [block] <axis> - The same as cylinder, but hollow.",
-                "> sel cleararea/ca - Basically 'set air'.",
-                "> sel replace/r <blocks...> <with> - Replaces blocks with another block.",
-                "> sel copy/cp <x> <y> <z> - Copy the selected area relative to the specified or your position.",
-                "> sel paste/p <x> <y> <z> - Build the copied area relative to the specified or your position.",
+                "> sel clear - 清除选择",
+                "> sel undo - 撤销上一个操作 (设置位置, 创建选区等)",
+                "> sel set [方块] - 用方块完全填充所有选择",
+                "> sel walls [方块] - 用指定的方块填充选区的墙壁",
+                "> sel shell [方块] - 与墙相同, 但也可以填充天花板和地板",
+                "> sel sphere [方块] - 用一个被边界包围的球体填充所选区域",
+                "> sel hsphere [方块] - 和球体相同, 但中空",
+                "> sel cylinder [方块] <轴> - 用由各侧面界定的圆柱填充选区, 以给定轴为方向 (default=y)",
+                "> sel hcylinder [方块] <轴> - 和圆柱体一样, 但是空心的",
+                "> sel cleararea - 基本上就是'设置空气'",
+                "> sel replace <方块...> <with> - 将方块替换为另一种方块",
+                "> sel copy <x> <y> <z> - 将所选区域相对于指定位置或你的位置复制",
+                "> sel paste <x> <y> <z> - 根据指定位置或你的位置构建复制的区域",
                 "",
-                "> sel expand <target> <direction> <blocks> - Expand the targets.",
-                "> sel contract <target> <direction> <blocks> - Contract the targets.",
-                "> sel shift <target> <direction> <blocks> - Shift the targets (does not resize)."
+                "> sel expand <目标> <方向> <方块> - 扩大目标",
+                "> sel contract <目标> <方向> <方块> - 锁定目标",
+                "> sel shift <目标> <方向> <方块> - 移动目标 (不调整大小)"
         );
     }
 
     enum Action {
-        POS1("pos1", "p1", "1"),
-        POS2("pos2", "p2", "2"),
-        CLEAR("clear", "c"),
-        UNDO("undo", "u"),
-        SET("set", "fill", "s", "f"),
-        WALLS("walls", "w"),
-        SHELL("shell", "shl"),
-        SPHERE("sphere", "sph"),
-        HSPHERE("hsphere", "hsph"),
-        CYLINDER("cylinder", "cyl"),
-        HCYLINDER("hcylinder", "hcyl"),
-        CLEARAREA("cleararea", "ca"),
-        REPLACE("replace", "r"),
-        EXPAND("expand", "ex"),
-        COPY("copy", "cp"),
-        PASTE("paste", "p"),
-        CONTRACT("contract", "ct"),
-        SHIFT("shift", "sh");
+        POS1( "1"),
+        POS2("2"),
+        CLEAR("clear"),
+        UNDO("undo"),
+        SET("set"),
+        WALLS("walls"),
+        SHELL("shell"),
+        SPHERE("sphere"),
+        HSPHERE("hsphere"),
+        CYLINDER("cylinder"),
+        HCYLINDER("hcylinder"),
+        CLEARAREA("cleararea"),
+        REPLACE("replace"),
+        EXPAND("expand"),
+        COPY("copy"),
+        PASTE("paste"),
+        CONTRACT("contract"),
+        SHIFT("shift");
         private final String[] names;
 
         Action(String... names) {
@@ -411,9 +411,9 @@ public class SelCommand extends Command {
     }
 
     enum TransformTarget {
-        ALL(sels -> sels, "all", "a"),
-        NEWEST(sels -> new ISelection[]{sels[sels.length - 1]}, "newest", "n"),
-        OLDEST(sels -> new ISelection[]{sels[0]}, "oldest", "o");
+        ALL(sels -> sels, "all"),
+        NEWEST(sels -> new ISelection[]{sels[sels.length - 1]}, "newest"),
+        OLDEST(sels -> new ISelection[]{sels[0]}, "oldest");
         private final Function<ISelection[], ISelection[]> transform;
         private final String[] names;
 

@@ -37,7 +37,7 @@ public class ComeCommand extends Command {
     public void execute(String label, IArgConsumer args) throws CommandException {
         args.requireMax(0);
         baritone.getCustomGoalProcess().setGoalAndPath(new GoalBlock(ctx.viewerPos()));
-        logDirect("Coming");
+        logDirect("即将到达...");
     }
 
     @Override
@@ -47,17 +47,17 @@ public class ComeCommand extends Command {
 
     @Override
     public String getShortDesc() {
-        return "Start heading towards your camera";
+        return "移动至相机位置";
     }
 
     @Override
     public List<String> getLongDesc() {
         return Arrays.asList(
-                "The come command tells Baritone to head towards your camera.",
+                "come 命令让你朝相机方向走去",
                 "",
-                "This can be useful in hacked clients where freecam doesn't move your player position.",
+                "因为灵魂出窍不会移动你的玩家位置",
                 "",
-                "Usage:",
+                "用法:",
                 "> come"
         );
     }

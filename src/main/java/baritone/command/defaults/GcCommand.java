@@ -36,7 +36,7 @@ public class GcCommand extends Command {
     public void execute(String label, IArgConsumer args) throws CommandException {
         args.requireMax(0);
         System.gc();
-        logDirect("ok called System.gc()");
+        logDirect("好的, 调用 System.gc()");
     }
 
     @Override
@@ -46,15 +46,15 @@ public class GcCommand extends Command {
 
     @Override
     public String getShortDesc() {
-        return "Call System.gc()";
+        return "调用 System.gc()";
     }
 
     @Override
     public List<String> getLongDesc() {
         return Arrays.asList(
-                "Calls System.gc().",
+                "调用 System.gc().",
                 "",
-                "Usage:",
+                "用法:",
                 "> gc"
         );
     }

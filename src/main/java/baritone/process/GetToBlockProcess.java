@@ -86,7 +86,7 @@ public final class GetToBlockProcess extends BaritoneProcessHelper implements IG
                     }
                 }, PathingCommandType.FORCE_REVALIDATE_GOAL_AND_PATH);
             }
-            logDirect("No known locations of " + gettingTo + ", canceling GetToBlock");
+            logDirect(gettingTo + "没有已知位置, 取消了GetToBlock");
             if (isSafeToCancel) {
                 onLostControl();
             }
@@ -95,11 +95,11 @@ public final class GetToBlockProcess extends BaritoneProcessHelper implements IG
         Goal goal = new GoalComposite(knownLocations.stream().map(this::createGoal).toArray(Goal[]::new));
         if (calcFailed) {
             if (Baritone.settings().blacklistClosestOnFailure.value) {
-                logDirect("Unable to find any path to " + gettingTo + ", blacklisting presumably unreachable closest instances...");
+                logDirect("找不到任何通往"+ gettingTo + "的路径, 将推测无法到达的最接近实例列入黑名单...");
                 blacklistClosest();
                 return onTick(false, isSafeToCancel); // gamer moment
             } else {
-                logDirect("Unable to find any path to " + gettingTo + ", canceling GetToBlock");
+                logDirect("找不到任何路径指向" + gettingTo + ", 取消GetToBlock");
                 if (isSafeToCancel) {
                     onLostControl();
                 }
@@ -149,7 +149,7 @@ public final class GetToBlockProcess extends BaritoneProcessHelper implements IG
                     break outer;
             }
         }
-        logDebug("Blacklisting unreachable locations " + newBlacklist);
+        logDebug("将不可到达的位置列入黑名单 " + newBlacklist);
         blacklist.addAll(newBlacklist);
         return !newBlacklist.isEmpty();
     }
@@ -188,9 +188,9 @@ public final class GetToBlockProcess extends BaritoneProcessHelper implements IG
     @Override
     public String displayName0() {
         if (knownLocations.isEmpty()) {
-            return "Exploring randomly to find " + gettingTo + ", no known locations";
+            return "随机探索寻找 " + gettingTo + ", 没有已知位置";
         }
-        return "Get To " + gettingTo + ", " + knownLocations.size() + " known locations";
+        return "获取 " + gettingTo + ", " + knownLocations.size() + " 已知位置";
     }
 
     private synchronized void rescan(List<BlockPos> known, CalculationContext context) {
@@ -222,13 +222,13 @@ public final class GetToBlockProcess extends BaritoneProcessHelper implements IG
                     }
                 }
                 if (arrivalTickCount++ > 20) {
-                    logDirect("Right click timed out");
+                    logDirect("右键操作超时");
                     return true;
                 }
                 return false; // trying to right click, will do it next tick or so
             }
         }
-        logDirect("Arrived but failed to right click open");
+        logDirect("已到达, 但无法右键打开");
         return true;
     }
 

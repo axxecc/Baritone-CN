@@ -71,7 +71,7 @@ public class FindCommand extends Command {
         if (components.length > 0) {
             Arrays.asList(components).forEach(this::logDirect);
         } else {
-            logDirect("No positions known, are you sure the blocks are cached?");
+            logDirect("没有已知位置, 你确定这些方块是缓存的吗?");
         }
     }
 
@@ -79,7 +79,7 @@ public class FindCommand extends Command {
         String positionText = String.format("%s %s %s", pos.x, pos.y, pos.z);
         String command = String.format("%sgoal %s", FORCE_COMMAND_PREFIX, positionText);
         MutableComponent baseComponent = Component.literal(pos.toString());
-        MutableComponent hoverComponent = Component.literal("Click to set goal to this position");
+        MutableComponent hoverComponent = Component.literal("点击设置目标至此位置");
         baseComponent.setStyle(baseComponent.getStyle()
                 .withColor(ChatFormatting.GRAY)
                 .withInsertion(positionText)
@@ -103,17 +103,17 @@ public class FindCommand extends Command {
 
     @Override
     public String getShortDesc() {
-        return "Find positions of a certain block";
+        return "找到某个方块的位置";
     }
 
     @Override
     public List<String> getLongDesc() {
         return Arrays.asList(
-                "The find command searches through Baritone's cache and attempts to find the location of the block.",
-                "Tab completion will suggest only cached blocks and uncached blocks can not be found.",
+                "查找命令会搜索Baritone的缓存, 并尝试找到该区块的位置",
+                "Tab补全会提示只缓存的块, 未缓存的块无法找到",
                 "",
-                "Usage:",
-                "> find <block> [...] - Try finding the listed blocks"
+                "用法:",
+                "> find <方块> [...] - 试着找找列出的方块"
         );
     }
 }
