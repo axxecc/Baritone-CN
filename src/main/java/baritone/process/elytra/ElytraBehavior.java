@@ -192,9 +192,9 @@ public final class ElytraBehavior implements Helper {
                     .thenRun(() -> {
                         final double distance = this.path.get(0).distanceTo(this.path.get(this.path.size() - 1));
                         if (this.completePath) {
-                            logVerbose(String.format("Computed path (%.1f blocks in %.4f seconds)", distance, (System.nanoTime() - start) / 1e9d));
+                            logVerbose(String.format("计算路径 (%.1f 个区块, 用时 %.4f 秒)", distance, (System.nanoTime() - start) / 1e9d));
                         } else {
-                            logVerbose(String.format("Computed segment (Next %.1f blocks in %.4f seconds)", distance, (System.nanoTime() - start) / 1e9d));
+                            logVerbose(String.format("已计算段 (接下来的 %.1f 个区块在 %.4f 秒内)", distance, (System.nanoTime() - start) / 1e9d));
                         }
                     })
                     .whenComplete((result, ex) -> {
@@ -202,7 +202,7 @@ public final class ElytraBehavior implements Helper {
                         if (ex != null) {
                             final Throwable cause = ex.getCause();
                             if (cause instanceof PathCalculationException) {
-                                logDirect("Failed to compute path to destination");
+                                logDirect("无法计算到目的地的路径");
                             } else {
                                 logUnhandledException(cause);
                             }
@@ -212,7 +212,7 @@ public final class ElytraBehavior implements Helper {
 
         public CompletableFuture<Void> pathRecalcSegment(final OptionalInt upToIncl) {
             if (this.recalculating) {
-                throw new IllegalStateException("already recalculating");
+                throw new IllegalStateException("已重新计算");
             }
 
             this.recalculating = true;
@@ -225,7 +225,7 @@ public final class ElytraBehavior implements Helper {
                         if (ex != null) {
                             final Throwable cause = ex.getCause();
                             if (cause instanceof PathCalculationException) {
-                                logDirect("Failed to recompute segment");
+                                logDirect("重新计算分段失败");
                             } else {
                                 logUnhandledException(cause);
                             }
@@ -249,9 +249,9 @@ public final class ElytraBehavior implements Helper {
                         final double distance = recompute > 0 ? this.path.get(0).distanceTo(this.path.get(recompute)) : 0;
 
                         if (this.completePath) {
-                            logVerbose(String.format("Computed path (%.1f blocks in %.4f seconds)", distance, (System.nanoTime() - start) / 1e9d));
+                            logVerbose(String.format("计算路径 (%.1f 个区块, 用时 %.4f 秒)", distance, (System.nanoTime() - start) / 1e9d));
                         } else {
-                            logVerbose(String.format("Computed segment (Next %.1f blocks in %.4f seconds)", distance, (System.nanoTime() - start) / 1e9d));
+                            logVerbose(String.format("已计算段 (接下来的 %.1f 个区块在 %.4f 秒内)", distance, (System.nanoTime() - start) / 1e9d));
                         }
                     })
                     .whenComplete((result, ex) -> {
@@ -259,9 +259,9 @@ public final class ElytraBehavior implements Helper {
                         if (ex != null) {
                             final Throwable cause = ex.getCause();
                             if (cause instanceof PathCalculationException) {
-                                logDirect("Failed to compute next segment");
+                                logDirect("无法计算下一个段");
                                 if (ctx.player().distanceToSqr(pathStart.getCenter()) < 16 * 16) {
-                                    logVerbose("Player is near the segment start, therefore repeating this calculation is pointless. Marking as complete");
+                                    logVerbose("玩家接近该段开始, 因此重复此计算毫无意义. 标记为完成");
                                     completePath = true;
                                 }
                             } else {
@@ -288,7 +288,7 @@ public final class ElytraBehavior implements Helper {
                 if (last != null && ElytraBehavior.this.clearView(Vec3.atLowerCornerOf(dest), Vec3.atLowerCornerOf(last), false)) {
                     path.add(new BetterBlockPos(dest));
                 } else {
-                    logDirect("unable to land at " + dest);
+                    logDirect("无法降落在 " + dest);
                     process.landingSpotIsBad(new BetterBlockPos(dest));
                 }
             }
@@ -339,7 +339,7 @@ public final class ElytraBehavior implements Helper {
             if (ElytraBehavior.this.process.state != ElytraProcess.State.LANDING && this.ticksNearUnchanged > 100) {
                 this.pathRecalcSegment(OptionalInt.of(rangeEndExcl - 1))
                         .thenRun(() -> {
-                            logVerbose("Recalculating segment, no progress in last 100 ticks");
+                            logVerbose("重新计算段, 过去100个Tick没有进展");
                         });
                 this.ticksNearUnchanged = 0;
                 return;
@@ -367,7 +367,7 @@ public final class ElytraBehavior implements Helper {
                     final long start = System.nanoTime();
                     this.pathRecalcSegment(rejoinMainPathAt)
                             .thenRun(() -> {
-                                logVerbose(String.format("Recalculated segment around path blockage near %s %s %s (next %.1f blocks in %.4f seconds)",
+                                logVerbose(String.format("重新计算了位于 %s %s %s 附近路径阻塞的路径段 (接下来的 %.1f 块将在 %.4f 秒内)",
                                         SettingsUtil.maybeCensor(blockage.x),
                                         SettingsUtil.maybeCensor(blockage.y),
                                         SettingsUtil.maybeCensor(blockage.z),
@@ -379,7 +379,7 @@ public final class ElytraBehavior implements Helper {
                 }
             }
             if (!canSeeAny && rangeStartIncl < rangeEndExcl - 2 && process.state != ElytraProcess.State.GET_TO_JUMP) {
-                this.pathRecalcSegment(OptionalInt.of(rangeEndExcl - 1)).thenRun(() -> logVerbose("Recalculated segment since no path points were visible"));
+                this.pathRecalcSegment(OptionalInt.of(rangeEndExcl - 1)).thenRun(() -> logVerbose("重新计算了该段, 因为没有可见的路径点"));
             }
         }
 
@@ -614,14 +614,14 @@ public final class ElytraBehavior implements Helper {
         }
 
         if (solution == null) {
-            logVerbose("no solution");
+            logVerbose("无解");
             return;
         }
 
         baritone.getLookBehavior().updateTarget(solution.rotation, false);
 
         if (!solution.solvedPitch) {
-            logVerbose("no pitch solution, probably gonna crash in a few ticks LOL!!!");
+            logVerbose("没找到方案, 可能几秒钟内就会崩溃LOL!!!");
             return;
         } else {
             this.aimPos = new BetterBlockPos(solution.goingTo.x, solution.goingTo.y, solution.goingTo.z);
@@ -745,7 +745,7 @@ public final class ElytraBehavior implements Helper {
 
     private void tickUseFireworks(final Vec3 start, final Vec3 goingTo, final boolean isBoosted, final boolean forceUseFirework) {
         if (this.remainingSetBackTicks > 0) {
-            logDebug("waiting for elytraFireworkSetbackUseDelay: " + this.remainingSetBackTicks);
+            logDebug("正在等待 elytraFireworkSetbackUseDelay: " + this.remainingSetBackTicks);
             return;
         }
         if (this.landingMode) {
@@ -769,10 +769,10 @@ public final class ElytraBehavior implements Helper {
             // TODO: Take the minimum boost time into account?
             if (!baritone.getInventoryBehavior().throwaway(true, ElytraBehavior::isBoostingFireworks) &&
                     !baritone.getInventoryBehavior().throwaway(true, ElytraBehavior::isFireworks)) {
-                logDirect("no fireworks");
+                logDirect("没有烟花了");
                 return;
             }
-            logVerbose("attempting to use firework" + (forceUseFirework ? " (forced)" : ""));
+            logVerbose("尝试使用烟花" + (forceUseFirework ? " (强制)" : ""));
             ctx.playerController().processRightClick(ctx.player(), ctx.world(), InteractionHand.MAIN_HAND);
             this.minimumBoostTicks = 10 * (1 + getFireworkBoost(ctx.player().getItemInHand(InteractionHand.MAIN_HAND)).orElse(0));
             this.remainingFireworkTicks = 10;
@@ -1385,7 +1385,7 @@ public final class ElytraBehavior implements Helper {
 
     public boolean raytrace(int count, double[] src, double[] dst, int visibility) {
         if (src.length != count * 3 || src.length != dst.length) {
-            throw new IllegalArgumentException("Expected source and dst to have length of " + (count * 3));
+            throw new IllegalArgumentException("期望的源和 DST 长度为 " + (count * 3));
         }
         final int maxHeight = npfContext.getMaxHeight() + ctx.world().getMinBuildHeight();
 

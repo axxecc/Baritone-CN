@@ -36,7 +36,7 @@ public class SaveAllCommand extends Command {
     public void execute(String label, IArgConsumer args) throws CommandException {
         args.requireMax(0);
         ctx.worldData().getCachedWorld().save();
-        logDirect("Saved");
+        logDirect("保存");
     }
 
     @Override
@@ -46,15 +46,15 @@ public class SaveAllCommand extends Command {
 
     @Override
     public String getShortDesc() {
-        return "Saves Baritone's cache for this world";
+        return "为此世界保存Baritone的缓存";
     }
 
     @Override
     public List<String> getLongDesc() {
         return Arrays.asList(
-                "The saveall command saves Baritone's world cache.",
+                "saveall命令可以保存Baritone的世界缓存",
                 "",
-                "Usage:",
+                "用法:",
                 "> saveall"
         );
     }

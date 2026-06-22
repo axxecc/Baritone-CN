@@ -38,19 +38,19 @@ public class BuildLimitPathFinder implements IElytraPathFinder {
 
     public BuildLimitPathFinder(IPlayerContext ctx, NetherPathfinderContext netherCtx) {
         if (ctx == null) {
-            throw new IllegalArgumentException("IPlayerContext cannot be null");
+            throw new IllegalArgumentException("IPlayerContext 不能为 null");
         }
         this.playerCtx = ctx;
 
         if (netherCtx == null) {
-            throw new IllegalArgumentException("NetherPathfinderContext cannot be null");
+            throw new IllegalArgumentException("NetherPathfinderContext 不能为 null");
         }
 
         this.flightLevel = ctx.world().getMaxBuildHeight() + 16;
         this.netherCtx = netherCtx;
 
         if(netherCtx.getMaxHeight() + ctx.world().getMinBuildHeight() < ctx.world().getMaxBuildHeight()) {
-            throw new IllegalStateException("Nether pathfinder max height is below world build limit, cannot proceed");
+            throw new IllegalStateException("下界最大高度低于世界建造限制, 无法继续");
         }
     }
 

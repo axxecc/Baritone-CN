@@ -29,7 +29,7 @@ public class CommandNotFoundException extends CommandException {
     public final String command;
 
     public CommandNotFoundException(String command) {
-        super(String.format("Command not found: %s", command));
+        super(String.format("找不到指令: %s", command));
         this.command = command;
     }
 

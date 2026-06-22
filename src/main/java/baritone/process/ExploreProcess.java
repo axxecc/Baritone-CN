@@ -81,25 +81,25 @@ public final class ExploreProcess extends BaritoneProcessHelper implements IExpl
     @Override
     public PathingCommand onTick(boolean calcFailed, boolean isSafeToCancel) {
         if (calcFailed) {
-            logDirect("Failed");
+            logDirect("失败");
             if (Baritone.settings().notificationOnExploreFinished.value) {
-                logNotification("Exploration failed", true);
+                logNotification("探索失败", true);
             }
             onLostControl();
             return null;
         }
         IChunkFilter filter = calcFilter();
         if (!Baritone.settings().disableCompletionCheck.value && filter.countRemain() == 0) {
-            logDirect("Explored all chunks");
+            logDirect("探索了所有区域");
             if (Baritone.settings().notificationOnExploreFinished.value) {
-                logNotification("Explored all chunks", false);
+                logNotification("探索了所有区域", false);
             }
             onLostControl();
             return null;
         }
         Goal[] closestUncached = closestUncachedChunks(explorationOrigin, filter);
         if (closestUncached == null) {
-            logDebug("awaiting region load from disk");
+            logDebug("正在等待从磁盘加载区域");
             return new PathingCommand(null, PathingCommandType.REQUEST_PAUSE);
         }
         return new PathingCommand(new GoalComposite(closestUncached), PathingCommandType.FORCE_REVALIDATE_GOAL_AND_PATH);
@@ -119,7 +119,7 @@ public final class ExploreProcess extends BaritoneProcessHelper implements IExpl
                     int trueDist = Math.abs(dx) + Math.abs(dz);
                     if (trueDist != dist) {
                         throw new IllegalStateException(String.format(
-                                "Offset %s %s has distance %s, expected %s",
+                                "偏移 %s %s 的距离为 %s, 预期为 %s",
                                 dx, dz, trueDist, dist));
                     }
                     switch (filter.isAlreadyExplored(chunkX + dx, chunkZ + dz)) {
@@ -222,7 +222,7 @@ public final class ExploreProcess extends BaritoneProcessHelper implements IExpl
             this.invert = invert;
             Gson gson = new GsonBuilder().create();
             positions = gson.fromJson(new InputStreamReader(Files.newInputStream(path)), MyChunkPos[].class);
-            logDirect("Loaded " + positions.length + " positions");
+            logDirect("加载 " + positions.length + " 位置");
             inFilter = new LongOpenHashSet();
             for (MyChunkPos mcp : positions) {
                 inFilter.add(ChunkPos.asLong(mcp.x, mcp.z));
@@ -296,6 +296,6 @@ public final class ExploreProcess extends BaritoneProcessHelper implements IExpl
 
     @Override
     public String displayName0() {
-        return "Exploring around " + explorationOrigin + ", distance completed " + distanceCompleted + ", currently going to " + new GoalComposite(closestUncachedChunks(explorationOrigin, calcFilter()));
+        return "正在探索 " + explorationOrigin + ", 已完成距离 " + distanceCompleted + ", 目前正在前往 " + new GoalComposite(closestUncachedChunks(explorationOrigin, calcFilter()));
     }
 }

@@ -38,9 +38,9 @@ public class VersionCommand extends Command {
         args.requireMax(0);
         String version = getClass().getPackage().getImplementationVersion();
         if (version == null) {
-            throw new CommandInvalidStateException("Null version (this is normal in a dev environment)");
+            throw new CommandInvalidStateException("空版本(在开发环境中这是正常的)");
         } else {
-            logDirect(String.format("You are running Baritone v%s", version));
+            logDirect(String.format("你正在运行 Baritone v%s", version));
         }
     }
 
@@ -51,16 +51,16 @@ public class VersionCommand extends Command {
 
     @Override
     public String getShortDesc() {
-        return "View the Baritone version";
+        return "查看Baritone版本";
     }
 
     @Override
     public List<String> getLongDesc() {
         return Arrays.asList(
-                "The version command prints the version of Baritone you're currently running.",
+                "version 命令会显示你当前运行的Baritone版本",
                 "",
-                "Usage:",
-                "> version - View version information, if present"
+                "用法:",
+                "> version - 查看版本信息(如果有)"
         );
     }
 }

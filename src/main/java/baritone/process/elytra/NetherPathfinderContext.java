@@ -174,7 +174,7 @@ public final class NetherPathfinderContext implements IElytraPathFinder {
                         8.0 // fakeChunkCost
                 );
                 if (segment == null) {
-                    throw new PathCalculationException("Path calculation failed");
+                    throw new PathCalculationException("路径计算失败");
                 }
 
                 return new UnpackedSegment(UnpackedSegment.from(segment).collect().stream().map(pos -> pos.above(minY)), segment.finished);
@@ -219,7 +219,7 @@ public final class NetherPathfinderContext implements IElytraPathFinder {
 
     public boolean raytrace(final int count, final double[] src, final double[] dst, final int visibility) {
         if (src.length != count * 3 || dst.length != count * 3) {
-            throw new IllegalArgumentException("Bad array lengths");
+            throw new IllegalArgumentException("数组长度不佳");
         }
 
         for(int i = 1; i < src.length; i+= 3) {
@@ -235,13 +235,13 @@ public final class NetherPathfinderContext implements IElytraPathFinder {
             case Visibility.ANY:
                 return NetherPathfinder.isVisibleMulti(this.context, NetherPathfinder.CACHE_MISS_SOLID, count, src, dst, true) != -1;
             default:
-                throw new IllegalArgumentException("lol");
+                throw new IllegalArgumentException("哇哦");
         }
     }
 
     public void raytrace(final int count, final double[] src, final double[] dst, final boolean[] hitsOut, final double[] hitPosOut) {
         if (src.length != count * 3 || dst.length != count * 3) {
-            throw new IllegalArgumentException("Bad array lengths");
+            throw new IllegalArgumentException("数组长度不佳");
         }
 
         for(int i = 1; i < src.length; i+= 3) {

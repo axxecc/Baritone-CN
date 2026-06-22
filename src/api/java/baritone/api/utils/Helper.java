@@ -237,8 +237,8 @@ public interface Helper {
     }
 
     default void logUnhandledException(final Throwable exception) {
-        HELPER.logDirect("An unhandled exception occurred. " +
-                        "The error is in your game's log, please report this at https://github.com/cabaletta/baritone/issues",
+        HELPER.logDirect("发生了一个未处理的异常! " +
+                        "错误出现在你的游戏日志中, 请在 https://github.com/cabaletta/baritone/issues",
                 ChatFormatting.RED);
         exception.printStackTrace();
     }

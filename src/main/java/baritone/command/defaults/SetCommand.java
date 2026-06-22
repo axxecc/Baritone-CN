@@ -39,6 +39,7 @@ import net.minecraft.network.chat.MutableComponent;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -48,18 +49,18 @@ import static baritone.api.utils.SettingsUtil.*;
 public class SetCommand extends Command {
 
     public SetCommand(IBaritone baritone) {
-        super(baritone, "set", "setting", "settings");
+        super(baritone, "set", "setting");
     }
 
     @Override
     public void execute(String label, IArgConsumer args) throws CommandException {
         String arg = args.hasAny() ? args.getString().toLowerCase(Locale.US) : "list";
-        if (Arrays.asList("s", "save").contains(arg)) {
+        if (Objects.equals("save", arg)) {
             SettingsUtil.save(Baritone.settings());
-            logDirect("Settings saved");
+            logDirect("已保存的设置");
             return;
         }
-        if (Arrays.asList("load", "ld").contains(arg)) {
+        if (Objects.equals("load", arg)) {
             String file = SETTINGS_DEFAULT_NAME;
             if (args.hasAny()) {
                 file = args.getString();
@@ -68,11 +69,11 @@ public class SetCommand extends Command {
             SettingsUtil.modifiedSettings(Baritone.settings()).forEach(Settings.Setting::reset);
             // then load from disk
             SettingsUtil.readAndApply(Baritone.settings(), file);
-            logDirect("Settings reloaded from " + file);
+            logDirect("重载设置, 来自 " + file);
             return;
         }
-        boolean viewModified = Arrays.asList("m", "mod", "modified").contains(arg);
-        boolean viewAll = Arrays.asList("all", "l", "list").contains(arg);
+        boolean viewModified = Objects.equals("modified", arg);
+        boolean viewAll = Objects.equals("list", arg);
         boolean paginate = viewModified || viewAll;
         if (paginate) {
             String search = args.hasAny() && args.peekAsOrNull(Integer.class) == null ? args.getString() : "";
@@ -88,8 +89,8 @@ public class SetCommand extends Command {
                     new Paginator<>(toPaginate),
                     () -> logDirect(
                             !search.isEmpty()
-                                    ? String.format("All %ssettings containing the string '%s':", viewModified ? "modified " : "", search)
-                                    : String.format("All %ssettings:", viewModified ? "modified " : "")
+                                    ? String.format("所有 %ssettings 包含字符串 '%s':", viewModified ? "已修改 " : "", search)
+                                    : String.format("所有 %ssettings:", viewModified ? "已修改 " : "")
                     ),
                     setting -> {
                         MutableComponent typeComponent = Component.literal(String.format(
@@ -100,9 +101,9 @@ public class SetCommand extends Command {
                         MutableComponent hoverComponent = Component.literal("");
                         hoverComponent.setStyle(hoverComponent.getStyle().withColor(ChatFormatting.GRAY));
                         hoverComponent.append(setting.getName());
-                        hoverComponent.append(String.format("\nType: %s", settingTypeToString(setting)));
-                        hoverComponent.append(String.format("\n\nValue:\n%s", settingValueToString(setting)));
-                        hoverComponent.append(String.format("\n\nDefault Value:\n%s", settingDefaultToString(setting)));
+                        hoverComponent.append(String.format("\n类型: %s", settingTypeToString(setting)));
+                        hoverComponent.append(String.format("\n\n值:\n%s", settingValueToString(setting)));
+                        hoverComponent.append(String.format("\n\n默认值:\n%s", settingDefaultToString(setting)));
                         String commandSuggestion = Baritone.settings().prefix.value + String.format("set %s ", setting.getName());
                         MutableComponent component = Component.literal(setting.getName());
                         component.setStyle(component.getStyle().withColor(ChatFormatting.GRAY));
@@ -122,12 +123,12 @@ public class SetCommand extends Command {
         boolean doingSomething = resetting || toggling;
         if (resetting) {
             if (!args.hasAny()) {
-                logDirect("Please specify 'all' as an argument to reset to confirm you'd really like to do this");
-                logDirect("ALL settings will be reset. Use the 'set modified' or 'modified' commands to see what will be reset.");
-                logDirect("Specify a setting name instead of 'all' to only reset one setting");
+                logDirect("请将参数指定为'all'以重置, 以确认您确实想执行此操作");
+                logDirect("所有设置将被重置. 使用'set modified'或'modified'命令查看将被重置的内容");
+                logDirect("指定一个设置名称. 而不是'all', 以只重置一个设置");
             } else if (args.peekString().equalsIgnoreCase("all")) {
                 SettingsUtil.modifiedSettings(Baritone.settings()).forEach(Settings.Setting::reset);
-                logDirect("All settings have been reset to their default values");
+                logDirect("所有设置已重置为默认值");
                 SettingsUtil.save(Baritone.settings());
                 return;
             }
@@ -147,10 +148,10 @@ public class SetCommand extends Command {
             // ideally it would act as if the setting didn't exist
             // but users will see it in Settings.java or its javadoc
             // so at some point we have to tell them or they will see it as a bug
-            throw new CommandInvalidStateException(String.format("Setting %s can only be used via the api.", setting.getName()));
+            throw new CommandInvalidStateException(String.format("设置 %s 只能通过API使用", setting.getName()));
         }
         if (!doingSomething && !args.hasAny()) {
-            logDirect(String.format("Value of setting %s:", setting.getName()));
+            logDirect(String.format("设置 %s 的值", setting.getName()));
             logDirect(settingValueToString(setting));
         } else {
             String oldValue = settingValueToString(setting);
@@ -164,7 +165,7 @@ public class SetCommand extends Command {
                 Settings.Setting<Boolean> asBoolSetting = (Settings.Setting<Boolean>) setting;
                 asBoolSetting.value ^= true;
                 logDirect(String.format(
-                        "Toggled setting %s to %s",
+                        "切换设置 %s 到 %s",
                         setting.getName(),
                         Boolean.toString((Boolean) setting.value)
                 ));
@@ -179,29 +180,29 @@ public class SetCommand extends Command {
             }
             if (!toggling) {
                 logDirect(String.format(
-                        "Successfully %s %s to %s",
-                        resetting ? "reset" : "set",
+                        "成功将 %s %s 设置为 %s",
+                        resetting ? "重置" : "设置",
                         setting.getName(),
                         settingValueToString(setting)
                 ));
             }
-            MutableComponent oldValueComponent = Component.literal(String.format("Old value: %s", oldValue));
+            MutableComponent oldValueComponent = Component.literal(String.format("旧值: %s", oldValue));
             oldValueComponent.setStyle(oldValueComponent.getStyle()
                     .withColor(ChatFormatting.GRAY)
                     .withHoverEvent(new HoverEvent(
                             HoverEvent.Action.SHOW_TEXT,
-                            Component.literal("Click to set the setting back to this value")
+                            Component.literal("点击将设置恢复到该值")
                     ))
                     .withClickEvent(new ClickEvent(
                             ClickEvent.Action.RUN_COMMAND,
-                            FORCE_COMMAND_PREFIX + String.format("set %s %s", setting.getName(), oldValue)
+                            FORCE_COMMAND_PREFIX + String.format("设为 %s %s", setting.getName(), oldValue)
                     )));
             logDirect(oldValueComponent);
             if ((setting.getName().equals("chatControl") && !(Boolean) setting.value && !Baritone.settings().chatControlAnyway.value) ||
                     setting.getName().equals("chatControlAnyway") && !(Boolean) setting.value && !Baritone.settings().chatControl.value) {
-                logDirect("Warning: Chat commands will no longer work. If you want to revert this change, use prefix control (if enabled) or click the old value listed above.", ChatFormatting.RED);
+                logDirect("警告: 聊天命令将不再有效. 如果你想恢复此更改, 请使用前缀控制(如果已启用)或点击上方列出的旧值", ChatFormatting.RED);
             } else if (setting.getName().equals("prefixControl") && !(Boolean) setting.value) {
-                logDirect("Warning: Prefixed commands will no longer work. If you want to revert this change, use chat control (if enabled) or click the old value listed above.", ChatFormatting.RED);
+                logDirect("警告: 带前缀的命令将不再有效. 如果你想撤销此更改, 请使用聊天控制(如果已启用)或点击上方列出的旧值", ChatFormatting.RED);
             }
         }
         SettingsUtil.save(Baritone.settings());
@@ -211,7 +212,7 @@ public class SetCommand extends Command {
     public Stream<String> tabComplete(String label, IArgConsumer args) throws CommandException {
         if (args.hasAny()) {
             String arg = args.getString();
-            if (args.hasExactlyOne() && !Arrays.asList("s", "save").contains(args.peekString().toLowerCase(Locale.US))) {
+            if (args.hasExactlyOne() && !Objects.equals("save", args.peekString().toLowerCase(Locale.US))) {
                 if (arg.equalsIgnoreCase("reset")) {
                     return new TabCompleteHelper()
                             .addModifiedSettings()
@@ -223,7 +224,7 @@ public class SetCommand extends Command {
                             .addToggleableSettings()
                             .filterPrefix(args.getString())
                             .stream();
-                } else if (Arrays.asList("ld", "load").contains(arg.toLowerCase(Locale.US))) {
+                } else if (Objects.equals("load", arg.toLowerCase(Locale.US))) {
                     // settings always use the directory of the main Minecraft instance
                     return RelativeFile.tabComplete(args, Minecraft.getInstance().gameDirectory.toPath().resolve("baritone").toFile());
                 }
@@ -255,26 +256,26 @@ public class SetCommand extends Command {
 
     @Override
     public String getShortDesc() {
-        return "View or change settings";
+        return "查看或更改设置";
     }
 
     @Override
     public List<String> getLongDesc() {
         return Arrays.asList(
-                "Using the set command, you can manage all of Baritone's settings. Almost every aspect is controlled by these settings - go wild!",
+                "使用 set 命令, 你可以管理Baritone的所有设置",
                 "",
-                "Usage:",
-                "> set - Same as `set list`",
-                "> set list [page] - View all settings",
-                "> set modified [page] - View modified settings",
-                "> set <setting> - View the current value of a setting",
-                "> set <setting> <value> - Set the value of a setting",
-                "> set reset all - Reset ALL SETTINGS to their defaults",
-                "> set reset <setting> - Reset a setting to its default",
-                "> set toggle <setting> - Toggle a boolean setting",
-                "> set save - Save all settings (this is automatic tho)",
-                "> set load - Load settings from settings.txt",
-                "> set load [filename] - Load settings from another file in your minecraft/baritone"
+                "用法:",
+                "> set - 与 'set list' 相同",
+                "> set list [page] - 查看所有设置",
+                "> set modified [page] - 查看已修改的设置",
+                "> set <setting> - 查看设置的当前值",
+                "> set <setting> <value> - 设置某个设置的值",
+                "> set reset all - 将所有设置重置为默认值",
+                "> set reset <setting> - 将设置重置为默认值",
+                "> set toggle <setting> - 切换布尔设置",
+                "> set save - 保存所有设置 (不过这是自动的)",
+                "> set load - 加载 settings.txt 设置",
+                "> set load [filename] - 从另一个文件加载你在 Minecraft/Baritone 中的设置"
         );
     }
 }

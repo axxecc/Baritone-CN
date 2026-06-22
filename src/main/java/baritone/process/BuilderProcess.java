@@ -150,7 +150,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
         this.stopAtHeight = schematic.heightY();
         if (Baritone.settings().buildOnlySelection.value && buildingSelectionSchematic) {  // currently redundant but safer maybe
             if (baritone.getSelectionManager().getSelections().length == 0) {
-                logDirect("Poor little kitten forgot to set a selection while BuildOnlySelection is true");
+                logDirect("可怜的小猫在 BuildOnlySelection 为true时忘记设置选择了");
                 this.stopAtHeight = 0;
             } else if (Baritone.settings().buildInLayers.value) {
                 OptionalInt minim = Stream.of(baritone.getSelectionManager().getSelections()).mapToInt(sel -> sel.min().y).min();
@@ -159,9 +159,9 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
                     int startAtHeight = Baritone.settings().layerOrder.value ? y + schematic.heightY() - maxim.getAsInt() : minim.getAsInt() - y;
                     this.stopAtHeight = (Baritone.settings().layerOrder.value ? y + schematic.heightY() - minim.getAsInt() : maxim.getAsInt() - y) + 1;
                     this.layer = Math.max(this.layer, startAtHeight / Baritone.settings().layerHeight.value);  // startAtLayer or startAtHeight, whichever is highest
-                    logDebug(String.format("Schematic starts at y=%s with height %s", y, schematic.heightY()));
-                    logDebug(String.format("Selection starts at y=%s and ends at y=%s", minim.getAsInt(), maxim.getAsInt()));
-                    logDebug(String.format("Considering relevant height %s - %s", startAtHeight, this.stopAtHeight));
+                    logDebug(String.format("原理图从 y=%s 开始, 高度为 %s", y, schematic.heightY()));
+                    logDebug(String.format("选择从 y=%s 开始, 到 y=%s 结束", minim.getAsInt(), maxim.getAsInt()));
+                    logDebug(String.format("考虑相关高度 %s - %s", startAtHeight, this.stopAtHeight));
                 }
             }
         }
@@ -223,10 +223,10 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
                 ISchematic schem = applyMapArtAndSelection(origin, raw);
                 this.build(raw.toString(), schem, origin);
             } else {
-                logDirect("No schematic currently open");
+                logDirect("当前没有打开原理图");
             }
         } else {
-            logDirect("Schematica is not present");
+            logDirect("未安装Schematica");
         }
     }
 
@@ -240,10 +240,10 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
                 ISchematic schematic2 = applyMapArtAndSelection(correctedOrigin, schematic.getA());
                 build(schematic.getA().toString(), schematic2, correctedOrigin);
             } else {
-                logDirect(String.format("List of placements has no entry %s", i + 1));
+                logDirect(String.format("列表中没有条目 %s", i + 1));
             }
         } else {
-            logDirect("Litematica is not present");
+            logDirect("未安装Litematica");
         }
     }
 
@@ -252,7 +252,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
         int widthX = Math.abs(corner1.getX() - corner2.getX()) + 1;
         int heightY = Math.abs(corner1.getY() - corner2.getY()) + 1;
         int lengthZ = Math.abs(corner1.getZ() - corner2.getZ()) + 1;
-        build("clear area", new FillSchematic(widthX, heightY, lengthZ, Blocks.AIR.defaultBlockState()), origin);
+        build("清理区域", new FillSchematic(widthX, heightY, lengthZ, Blocks.AIR.defaultBlockState()), origin);
     }
 
     @Override
@@ -442,7 +442,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
                 double z = side.getStepZ() == 0 ? 0.5 : (1 + side.getStepZ()) / 2D;
                 return new Vec3[]{new Vec3(x, 0.25, z), new Vec3(x, 0.75, z)};
             default: // null
-                throw new IllegalStateException("Unexpected side " + side);
+                throw new IllegalStateException("意外的一面 " + side);
         }
     }
 
@@ -516,7 +516,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
         BuilderCalculationContext bcc = new BuilderCalculationContext();
         if (!recalc(bcc)) {
             if (Baritone.settings().buildInLayers.value && layer * Baritone.settings().layerHeight.value < stopAtHeight) {
-                logDirect("Starting layer " + layer);
+                logDirect("起始层 " + layer);
                 layer++;
                 return onTick(calcFailed, isSafeToCancel, recursions + 1);
             }
@@ -524,9 +524,9 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
             int max = Baritone.settings().buildRepeatCount.value;
             numRepeats++;
             if (repeat.equals(new Vec3i(0, 0, 0)) || (max != -1 && numRepeats >= max)) {
-                logDirect("Done building");
+                logDirect("建造完成");
                 if (Baritone.settings().notificationOnBuildFinished.value) {
-                    logNotification("Done building", false);
+                    logNotification("建造完成", false);
                 }
                 onLostControl();
                 return null;
@@ -537,7 +537,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
             if (!Baritone.settings().buildRepeatSneaky.value) {
                 schematic.reset();
             }
-            logDirect("Repeating build in vector " + repeat + ", new origin is " + origin);
+            logDirect("重复构建向量 " + repeat + ", 新原点为 " + origin);
             return onTick(calcFailed, isSafeToCancel, recursions + 1);
         }
         if (Baritone.settings().distanceTrim.value) {
@@ -609,11 +609,11 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
             goal = assemble(bcc, approxPlaceable, true); // we're far away, so assume that we have our whole inventory to recalculate placeable properly
             if (goal == null) {
                 if (Baritone.settings().skipFailedLayers.value && Baritone.settings().buildInLayers.value && layer * Baritone.settings().layerHeight.value < realSchematic.heightY()) {
-                    logDirect("Skipping layer that I cannot construct! Layer #" + layer);
+                    logDirect("跳过无法建造的层! 层 #" + layer);
                     layer++;
                     return onTick(calcFailed, isSafeToCancel, recursions + 1);
                 }
-                logDirect("Unable to do it. Pausing. resume to resume, cancel to cancel");
+                logDirect("无法执行, 暂停中. 选择\"resume\"以继续, 选择\"cancel\"以取消");
                 paused = true;
                 return new PathingCommand(null, PathingCommandType.REQUEST_PAUSE);
             }
@@ -762,13 +762,13 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
         }
         if (toBreak.isEmpty()) {
             if (logMissing && !missing.isEmpty()) {
-                logDirect("Missing materials for at least:");
+                logDirect("缺少材料:");
                 logDirect(missing.entrySet().stream()
                         .map(e -> String.format("%sx %s", e.getValue(), e.getKey()))
                         .collect(Collectors.joining("\n")));
             }
             if (logMissing && !flowingLiquids.isEmpty()) {
-                logDirect("Unreplaceable liquids at at least:");
+                logDirect("不可替换的液体:");
                 logDirect(flowingLiquids.stream()
                         .map(p -> String.format("%s %s %s", p.x, p.y, p.z))
                         .collect(Collectors.joining("\n")));
@@ -823,7 +823,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
 
         @Override
         public String toString() {
-            return "JankyComposite Primary: " + primary + " Fallback: " + fallback;
+            return "JankyComposite 初选: " + primary + " 备选: " + fallback;
         }
     }
 
@@ -846,7 +846,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
         @Override
         public String toString() {
             return String.format(
-                    "GoalBreak{x=%s,y=%s,z=%s}",
+                    "目标破坏{x=%s,y=%s,z=%s}",
                     SettingsUtil.maybeCensor(x),
                     SettingsUtil.maybeCensor(y),
                     SettingsUtil.maybeCensor(z)
@@ -946,7 +946,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
         @Override
         public String toString() {
             return String.format(
-                    "GoalAdjacent{x=%s,y=%s,z=%s}",
+                    "目标邻近{x=%s,y=%s,z=%s}",
                     SettingsUtil.maybeCensor(x),
                     SettingsUtil.maybeCensor(y),
                     SettingsUtil.maybeCensor(z)
@@ -974,7 +974,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
         @Override
         public String toString() {
             return String.format(
-                    "GoalPlace{x=%s,y=%s,z=%s}",
+                    "目标地点{x=%s,y=%s,z=%s}",
                     SettingsUtil.maybeCensor(x),
                     SettingsUtil.maybeCensor(y),
                     SettingsUtil.maybeCensor(z)
@@ -996,7 +996,7 @@ public final class BuilderProcess extends BaritoneProcessHelper implements IBuil
 
     @Override
     public String displayName0() {
-        return paused ? "Builder Paused" : "Building " + name;
+        return paused ? "建造暂停" : "建造中 " + name;
     }
 
     @Override

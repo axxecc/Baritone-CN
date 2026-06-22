@@ -47,7 +47,7 @@ public class GotoCommand extends Command {
             args.requireMax(3);
             BetterBlockPos origin = ctx.playerFeet();
             Goal goal = args.getDatatypePost(RelativeGoal.INSTANCE, origin);
-            logDirect(String.format("Going to: %s", goal.toString()));
+            logDirect(String.format("前往: %s", goal.toString()));
             baritone.getCustomGoalProcess().setGoalAndPath(goal);
             return;
         }
@@ -66,21 +66,21 @@ public class GotoCommand extends Command {
 
     @Override
     public String getShortDesc() {
-        return "Go to a coordinate or block";
+        return "去坐标或方块";
     }
 
     @Override
     public List<String> getLongDesc() {
         return Arrays.asList(
-                "The goto command tells Baritone to head towards a given goal or block.",
+                "goto指令告诉Baritone朝指定目标或方块前进",
                 "",
-                "Wherever a coordinate is expected, you can use ~ just like in regular Minecraft commands. Or, you can just use regular numbers.",
+                "无论在哪里需要坐标, 你都可以像用普通Minecraft命令一样使用~. 或者, 你也可以直接用普通数字",
                 "",
-                "Usage:",
-                "> goto <block> - Go to a block, wherever it is in the world",
-                "> goto <y> - Go to a Y level",
-                "> goto <x> <z> - Go to an X,Z position",
-                "> goto <x> <y> <z> - Go to an X,Y,Z position"
+                "用法:",
+                "> goto <方块> - 寻找一个方块, 无论它在世界上的哪个位置",
+                "> goto <y> - 去Y级",
+                "> goto <x> <z> - 去X,Z位置",
+                "> goto <x> <y> <z> - 去X,Y,Z的位置"
         );
     }
 }

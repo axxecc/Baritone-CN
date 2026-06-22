@@ -130,33 +130,33 @@ public class ElytraProcess extends BaritoneProcessHelper implements IBaritonePro
         }
     }
 
-    private static final String AUTO_JUMP_FAILURE_MSG = "Failed to compute a walking path to a spot to jump off from. Consider starting from a higher location, near an overhang. Or, you can disable elytraAutoJump and just manually begin gliding.";
+    private static final String AUTO_JUMP_FAILURE_MSG = "没能计算出通往跳跃点的步行路径. 考虑从更高的位置开始, 靠近悬挑处. 或者, 你可以关闭elytraAutoJump, 直接手动开始滑翔";
 
     @Override
     public PathingCommand onTick(boolean calcFailed, boolean isSafeToCancel) {
         try {
             final long seedSetting = Baritone.settings().elytraNetherSeed.value;
             if (seedSetting != this.behavior.npfContext.getSeed()) {
-                logDirect("Nether seed changed, recalculating path");
+                logDirect("下界种子已更改, 正在重新计算路径");
                 this.resetState();
             }
             if (predictingTerrain != Baritone.settings().elytraPredictTerrain.value && ctx.player().level.dimension() == Level.NETHER) {
-                logDirect("elytraPredictTerrain setting changed, recalculating path from scratch");
+                logDirect("elytraPredictTerrain 设置已更改, 正在重新计算路径");
                 predictingTerrain = Baritone.settings().elytraPredictTerrain.value;
                 this.resetState();
             }
             if (allowTight != Baritone.settings().elytraAllowTightSpaces.value) {
-                logDirect("elytraAllowTightSpaces setting changed, recalculating path from scratch");
+                logDirect("elytraAllowTightSpaces 设置已更改, 正在重新计算路径");
                 allowTight = Baritone.settings().elytraAllowTightSpaces.value;
                 this.resetState();
             }
             if (allowAboveBuildLimit != Baritone.settings().elytraAllowAboveBuildLimit.value) {
-                logDirect("elytraAllowAboveBuildLimit setting changed, recalculating path from scratch");
+                logDirect("elytraAllowAboveBuildLimit 设置已更改, 正在重新计算路径");
                 allowAboveBuildLimit = Baritone.settings().elytraAllowAboveBuildLimit.value;
                 this.resetState();
             }
             if (allowAboveRoof != Baritone.settings().elytraAllowAboveRoof.value && ctx.player().level.dimension() == Level.NETHER) {
-                logDirect("elytraAllowAboveRoof setting changed, recalculating path from scratch");
+                logDirect("elytraAllowAboveRoof 设置已更改, 正在重新计算路径");
                 allowAboveRoof = Baritone.settings().elytraAllowAboveRoof.value;
                 this.resetState();
             }
@@ -176,22 +176,22 @@ public class ElytraProcess extends BaritoneProcessHelper implements IBaritonePro
         boolean safetyLanding = false;
         if (ctx.player().isFallFlying() && shouldLandForSafety()) {
             if (Baritone.settings().elytraAllowEmergencyLand.value) {
-                logDirect("Emergency landing - almost out of elytra durability or fireworks");
+                logDirect("紧急降落—鞘翅耐久或烟花几乎耗尽");
                 safetyLanding = true;
             } else {
-                logDirect("almost out of elytra durability or fireworks, but I'm going to continue since elytraAllowEmergencyLand is false");
+                logDirect("翅膀耐久度或烟火几乎用尽, 但由于 elytraAllowEmergencyLand 为 false, 还是会继续飞");
             }
         }
         if (ctx.player().isFallFlying() && this.state != State.LANDING && (this.behavior.pathManager.isComplete() || safetyLanding)) {
             final BetterBlockPos last = this.behavior.pathManager.path.getLast();
             if (last != null && (ctx.player().position().distanceToSqr(last.getCenter()) < (48 * 48) || safetyLanding) && (!goingToLandingSpot || (safetyLanding && this.landingSpot == null))) {
                 if (this.landingSearchState == null) {
-                    logDirect("Path complete, searching for safe landing spot...");
+                    logDirect("路径已完成, 正在选择附近的安全着陆点...");
                 }
                 BetterBlockPos landingSpot = findSafeLandingSpot(ctx.playerFeet());
                 // if this fails we will just keep orbiting the last node until we run out of rockets or the user intervenes
                 if (landingSpot != null) {
-                    logDirect("Found potential landing spot.");
+                    logDirect("找到了潜在的着陆点");
                     this.pathTo0(landingSpot, true);
                     this.landingSpot = landingSpot;
                     this.goingToLandingSpot = true;
@@ -202,7 +202,7 @@ public class ElytraProcess extends BaritoneProcessHelper implements IBaritonePro
 
             if (last != null && ctx.player().position().distanceToSqr(last.getCenter()) < 1) {
                 if (Baritone.settings().notificationOnPathComplete.value && !reachedGoal) {
-                    logNotification("Pathing complete", false);
+                    logNotification("路径规划完成", false);
                 }
                 if (Baritone.settings().disconnectOnArrival.value && !reachedGoal) {
                     // don't be active when the user logs back in
@@ -215,7 +215,7 @@ public class ElytraProcess extends BaritoneProcessHelper implements IBaritonePro
                 // we are goingToLandingSpot and we are in the last node of the path
                 if (this.goingToLandingSpot && landingSpot != null) {
                     this.state = State.LANDING;
-                    logDirect("Above the landing spot, landing...");
+                    logDirect("在着陆点上方, 正在着陆...");
                 }
             }
         }
@@ -229,7 +229,7 @@ public class ElytraProcess extends BaritoneProcessHelper implements IBaritonePro
                 baritone.getLookBehavior().updateTarget(new Rotation(rotation.getYaw(), 0), false); // this will be overwritten, probably, by behavior tick
 
                 if (ctx.player().position().y < endPos.y - this.landingColumnHeight) {
-                    logDirect("bad landing spot, trying again...");
+                    logDirect("着陆点不好, 正在重试...");
                     landingSpotIsBad(endPos);
                 }
             }
@@ -249,11 +249,11 @@ public class ElytraProcess extends BaritoneProcessHelper implements IBaritonePro
             return new PathingCommand(null, PathingCommandType.CANCEL_AND_SET_GOAL);
         } else if (this.state == State.LANDING) {
             if (ctx.playerMotion().multiply(1, 0, 1).length() > 0.001) {
-                logDirect("Landed, but still moving, waiting for velocity to die down... ");
+                logDirect("已着陆, 但仍在移动, 正在等待速度减缓... ");
                 baritone.getInputOverrideHandler().setInputForceState(Input.SNEAK, true);
                 return new PathingCommand(null, PathingCommandType.REQUEST_PAUSE);
             }
-            logDirect("Done :)");
+            logDirect("完成 :)");
             baritone.getInputOverrideHandler().clearAllKeys();
             this.onLostControl();
             return new PathingCommand(null, PathingCommandType.REQUEST_PAUSE);
@@ -267,7 +267,7 @@ public class ElytraProcess extends BaritoneProcessHelper implements IBaritonePro
 
         if (this.state == State.LOCATE_JUMP) {
             if (shouldLandForSafety()) {
-                logDirect("Not taking off, because elytra durability or fireworks are so low that I would immediately emergency land anyway.");
+                logDirect("没有起飞, 因为鞘翅耐久低或烟花太少, 无论如何都会立即着陆");
                 onLostControl();
                 return new PathingCommand(null, PathingCommandType.CANCEL_AND_SET_GOAL);
             }
@@ -360,7 +360,7 @@ public class ElytraProcess extends BaritoneProcessHelper implements IBaritonePro
 
     @Override
     public String displayName0() {
-        return "Elytra - " + this.state.description;
+        return "鞘翅 - " + this.state.description;
     }
 
     @Override
@@ -402,11 +402,11 @@ public class ElytraProcess extends BaritoneProcessHelper implements IBaritonePro
     @Override
     public void pathTo(BlockPos destination) {
         if (!isSupportedPos(destination)) {
-            throw new IllegalArgumentException("The goal must be within bounds to use elytra flight.");
+            throw new IllegalArgumentException("使用鞘翅飞行的目标必须在范围内");
         }
 
         if (ctx.player() != null && !isSupportedPos(ctx.playerFeet())) {
-            throw new IllegalArgumentException("The player must be within bounds to use elytra flight.");
+            throw new IllegalArgumentException("玩家必须处于范围内才能使用鞘翅飞行");
         }
 
         this.pathTo0(destination, false);
@@ -446,7 +446,7 @@ public class ElytraProcess extends BaritoneProcessHelper implements IBaritonePro
             y = goal.y;
             z = goal.z;
         } else {
-            throw new IllegalArgumentException("The goal must be a GoalXZ or GoalBlock");
+            throw new IllegalArgumentException("目标必须是GoalXZ或GoalBlock");
         }
 
         this.pathTo((new BlockPos(x, y, z)));
@@ -500,12 +500,12 @@ public class ElytraProcess extends BaritoneProcessHelper implements IBaritonePro
     }
 
     public enum State {
-        LOCATE_JUMP("Finding spot to jump off"),
-        PAUSE("Waiting for elytra path"),
-        GET_TO_JUMP("Walking to takeoff"),
-        START_FLYING("Begin flying"),
-        FLYING("Flying"),
-        LANDING("Landing");
+        LOCATE_JUMP("寻找跳跃点"),
+        PAUSE("等待鞘翅路径"),
+        GET_TO_JUMP("步行到起飞点"),
+        START_FLYING("开始飞行"),
+        FLYING("飞行"),
+        LANDING("着陆");
 
         public final String description;
 

@@ -61,7 +61,7 @@ public final class CustomGoalProcess extends BaritoneProcessHelper implements IC
             try {
                 baritone.getElytraProcess().pathTo(goal);
             } catch (IllegalArgumentException e) {
-                logDirect("Failed to update elytra goal because: " + e.getMessage(), ChatFormatting.RED);
+                logDirect("没能更新鞘翅目标, 因为: " + e.getMessage(), ChatFormatting.RED);
             }
         }
         if (this.state == State.NONE) {
@@ -113,13 +113,13 @@ public final class CustomGoalProcess extends BaritoneProcessHelper implements IC
                         ctx.world().disconnect();
                     }
                     if (Baritone.settings().notificationOnPathComplete.value) {
-                        logNotification("Pathing complete", false);
+                        logNotification("路径完成", false);
                     }
                     return new PathingCommand(this.goal, PathingCommandType.CANCEL_AND_SET_GOAL);
                 }
                 return new PathingCommand(this.goal, PathingCommandType.SET_GOAL_AND_PATH);
             default:
-                throw new IllegalStateException("Unexpected state " + this.state);
+                throw new IllegalStateException("意外状态 " + this.state);
         }
     }
 
@@ -131,7 +131,7 @@ public final class CustomGoalProcess extends BaritoneProcessHelper implements IC
 
     @Override
     public String displayName0() {
-        return "Custom Goal " + this.goal;
+        return "自定义目标 " + this.goal;
     }
 
     protected enum State {
