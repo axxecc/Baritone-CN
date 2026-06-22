@@ -54,7 +54,7 @@ public class HelpCommand extends Command {
                                     .filter(command -> !command.hiddenFromHelp())
                                     .collect(Collectors.toList())
                     ),
-                    () -> logDirect("All Baritone commands (clickable):"),
+                    () -> logDirect("所有Baritone指令 (可点击):"),
                     command -> {
                         String names = String.join("/", command.getNames());
                         String name = command.getNames().get(0);
@@ -66,7 +66,7 @@ public class HelpCommand extends Command {
                         hoverComponent.setStyle(hoverComponent.getStyle().withColor(ChatFormatting.GRAY));
                         hoverComponent.append(namesComponent);
                         hoverComponent.append("\n" + command.getShortDesc());
-                        hoverComponent.append("\n\nClick to view full help");
+                        hoverComponent.append("\n\n点击查看完整帮助");
                         String clickCommand = FORCE_COMMAND_PREFIX + String.format("%s %s", label, command.getNames().get(0));
                         MutableComponent component = Component.literal(name);
                         component.setStyle(component.getStyle().withColor(ChatFormatting.GRAY));
@@ -88,8 +88,9 @@ public class HelpCommand extends Command {
             logDirect("");
             command.getLongDesc().forEach(this::logDirect);
             logDirect("");
-            MutableComponent returnComponent = Component.literal("Click to return to the help menu");
-            returnComponent.setStyle(returnComponent.getStyle().withClickEvent(new ClickEvent.RunCommand(
+            MutableComponent returnComponent = Component.literal("点击返回帮助菜单");
+            returnComponent.setStyle(returnComponent.getStyle().withClickEvent(new ClickEvent(
+                    ClickEvent.Action.RUN_COMMAND,
                     FORCE_COMMAND_PREFIX + label
             )));
             logDirect(returnComponent);
@@ -109,17 +110,17 @@ public class HelpCommand extends Command {
 
     @Override
     public String getShortDesc() {
-        return "View all commands or help on specific ones";
+        return "查看所有特定命令或帮助";
     }
 
     @Override
     public List<String> getLongDesc() {
         return Arrays.asList(
-                "Using this command, you can view detailed help information on how to use certain commands of Baritone.",
+                "使用该命令, 您可以查看关于如何使用某些Baritone指令的详细帮助信息",
                 "",
-                "Usage:",
-                "> help - Lists all commands and their short descriptions.",
-                "> help <command> - Displays help information on a specific command."
+                "用法:",
+                "> help - 列出所有命令及其简短描述",
+                "> help <命令> - 显示特定命令的帮助信息"
         );
     }
 }

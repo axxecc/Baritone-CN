@@ -15,26 +15,12 @@
  * along with Baritone.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package baritone.api.command.exception;
+package baritone.process.elytra;
 
-import baritone.api.command.ICommand;
-import baritone.api.command.argument.ICommandArgument;
+import net.minecraft.core.BlockPos;
 
-import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
-import static baritone.api.utils.Helper.HELPER;
-
-public class CommandNotFoundException extends CommandException {
-
-    public final String command;
-
-    public CommandNotFoundException(String command) {
-        super(String.format("找不到指令: %s", command));
-        this.command = command;
-    }
-
-    @Override
-    public void handle(ICommand command, List<ICommandArgument> args) {
-        HELPER.logDirect(getMessage());
-    }
+public interface IElytraPathFinder {
+    CompletableFuture<UnpackedSegment> pathFindAsync(final BlockPos src, final BlockPos dst);
 }

@@ -70,11 +70,12 @@ public class WaypointBehavior extends Behavior {
             return;
         Waypoint deathWaypoint = new Waypoint("death", Waypoint.Tag.DEATH, ctx.playerFeet());
         baritone.getWorldProvider().getCurrentWorld().getWaypoints().addWaypoint(deathWaypoint);
-        MutableComponent component = Component.literal("Death position saved.");
+        MutableComponent component = Component.literal("死亡点已保存");
         component.setStyle(component.getStyle()
                 .withColor(ChatFormatting.WHITE)
-                .withHoverEvent(new HoverEvent.ShowText(
-                        Component.literal("Click to goto death")
+                .withHoverEvent(new HoverEvent(
+                        HoverEvent.Action.SHOW_TEXT,
+                        Component.literal("点击前往死亡点")
                 ))
                 .withClickEvent(new ClickEvent.RunCommand(
                         String.format(

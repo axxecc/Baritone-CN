@@ -28,8 +28,6 @@ import baritone.api.pathing.goals.Goal;
 import baritone.api.process.ICustomGoalProcess;
 import baritone.api.process.IElytraProcess;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.multiplayer.ServerData;
-import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
@@ -38,8 +36,6 @@ import net.minecraft.world.level.Level;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
-
-import static baritone.api.command.IBaritoneChatControl.FORCE_COMMAND_PREFIX;
 
 public class ElytraCommand extends Command {
 
@@ -51,8 +47,8 @@ public class ElytraCommand extends Command {
     public void execute(String label, IArgConsumer args) throws CommandException {
         final ICustomGoalProcess customGoalProcess = baritone.getCustomGoalProcess();
         final IElytraProcess elytra = baritone.getElytraProcess();
-        if (args.hasExactlyOne() && args.peekString().equals("supported")) {
-            logDirect(elytra.isLoaded() ? "yes" : unsupportedSystemMessage());
+        if (args.hasExactlyOne() && args.peekString().equals("支持")) {
+            logDirect(elytra.isLoaded() ? "支持此设备" : unsupportedSystemMessage());
             return;
         }
         if (!elytra.isLoaded()) {
@@ -61,18 +57,11 @@ public class ElytraCommand extends Command {
 
         if (!args.hasAny()) {
             if (Baritone.settings().elytraTermsAccepted.value) {
-                if (detectOn2b2t()) {
-                    warn2b2t();
-                }
-            } else {
                 gatekeep();
             }
             Goal iGoal = customGoalProcess.mostRecentGoal();
             if (iGoal == null) {
-                throw new CommandInvalidStateException("No goal has been set");
-            }
-            if (ctx.world().dimension() != Level.NETHER) {
-                throw new CommandInvalidStateException("Only works in the nether");
+                throw new CommandInvalidStateException("尚未设定任何目标");
             }
             try {
                 elytra.pathTo(iGoal);
@@ -85,105 +74,55 @@ public class ElytraCommand extends Command {
         final String action = args.getString();
         switch (action) {
             case "reset": {
-                elytra.resetState();
-                logDirect("Reset state but still flying to same goal");
+                try {
+                    elytra.resetState();
+                } catch (IllegalArgumentException ex) {
+                    throw new CommandInvalidStateException(ex.getMessage());
+                }
+                logDirect("状态重置, 但仍然飞向同一目标");
                 break;
             }
             case "repack": {
                 elytra.repackChunks();
-                logDirect("Queued all loaded chunks for repacking");
+                logDirect("已将所有加载的区块排队以重新打包");
                 break;
             }
             default: {
-                throw new CommandInvalidStateException("Invalid action");
+                throw new CommandInvalidStateException("无效动作");
             }
         }
-    }
-
-    private void warn2b2t() {
-        if (Baritone.settings().elytraPredictTerrain.value) {
-            long seed = Baritone.settings().elytraNetherSeed.value;
-            if (seed != NEW_2B2T_SEED && seed != OLD_2B2T_SEED) {
-                logDirect(Component.literal("It looks like you're on 2b2t, but elytraNetherSeed is incorrect.")); // match color
-                logDirect(suggest2b2tSeeds());
-            }
-        }
-    }
-
-    private Component suggest2b2tSeeds() {
-        MutableComponent clippy = Component.literal("");
-        clippy.append("Within a few hundred blocks of spawn/axis/highways/etc, the terrain is too fragmented to be predictable. Baritone Elytra will still work, just with backtracking. ");
-        clippy.append("However, once you get more than a few thousand blocks out, you should try ");
-        MutableComponent olderSeed = Component.literal("the older seed (click here)");
-        olderSeed.setStyle(olderSeed.getStyle().withUnderlined(true).withBold(true).withHoverEvent(new HoverEvent.ShowText(Component.literal(Baritone.settings().prefix.value + "set elytraNetherSeed " + OLD_2B2T_SEED))).withClickEvent(new ClickEvent.RunCommand(FORCE_COMMAND_PREFIX + "set elytraNetherSeed " + OLD_2B2T_SEED)));
-        clippy.append(olderSeed);
-        clippy.append(". Once you're further out into newer terrain generation (this includes everything up through 1.12), you should try ");
-        MutableComponent newerSeed = Component.literal("the newer seed (click here)");
-        newerSeed.setStyle(newerSeed.getStyle().withUnderlined(true).withBold(true).withHoverEvent(new HoverEvent.ShowText(Component.literal(Baritone.settings().prefix.value + "set elytraNetherSeed " + NEW_2B2T_SEED))).withClickEvent(new ClickEvent.RunCommand(FORCE_COMMAND_PREFIX + "set elytraNetherSeed " + NEW_2B2T_SEED)));
-        clippy.append(newerSeed);
-        clippy.append(". Once you get into 1.19 terrain, the terrain becomes unpredictable again, due to custom non-vanilla generation, and you should set #elytraPredictTerrain to false. ");
-        return clippy;
     }
 
     private void gatekeep() {
         MutableComponent gatekeep = Component.literal("");
-        gatekeep.append("To disable this message, enable the setting elytraTermsAccepted\n");
-        gatekeep.append("Baritone Elytra is an experimental feature. It is only intended for long distance travel in the Nether using fireworks for vanilla boost. It will not work with any other mods (\"hacks\") for non-vanilla boost. ");
-        MutableComponent gatekeep2 = Component.literal("If you want Baritone to attempt to take off from the ground for you, you can enable the elytraAutoJump setting (not advisable on laggy servers!). ");
-        gatekeep2.setStyle(gatekeep2.getStyle().withHoverEvent(new HoverEvent.ShowText(Component.literal(Baritone.settings().prefix.value + "set elytraAutoJump true"))));
+        gatekeep.append("要禁用此消息, 请启用 elytraTermsAccepted 设置\n");
+        gatekeep.append("男中音鞘翅是一个实验性特征. 它适合在下界长途旅行, 但也能在主世界使用, 使用烟花作为原版加速. 它无法和其他任何模组 (\"hacks\") 一起使用, 用于非原版的加速");
+        MutableComponent gatekeep2 = Component.literal("如果希望Baritone尝试从地面起飞, 你可以启用elytraAutoJump (在卡顿服务器上不建议这样做!). ");
+        gatekeep2.setStyle(gatekeep2.getStyle().withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(Baritone.settings().prefix.value + "set elytraAutoJump true"))));
         gatekeep.append(gatekeep2);
-        MutableComponent gatekeep3 = Component.literal("If you want Baritone to go slower, enable the elytraConserveFireworks setting and/or decrease the elytraFireworkSpeed setting. ");
-        gatekeep3.setStyle(gatekeep3.getStyle().withHoverEvent(new HoverEvent.ShowText(Component.literal(Baritone.settings().prefix.value + "set elytraConserveFireworks true\n" + Baritone.settings().prefix.value + "set elytraFireworkSpeed 0.6\n(the 0.6 number is just an example, tweak to your liking)"))));
+        MutableComponent gatekeep3 = Component.literal("如果希望Baritone飞得更慢, 请启用elytraConserveFireworks或降低elytraFireworkSpeed\n");
+        gatekeep3.setStyle(gatekeep3.getStyle().withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(Baritone.settings().prefix.value + "set elytraConserveFireworks true\n" + Baritone.settings().prefix.value + "set elytraFireworkSpeed 0.6\n(0.6 这个数字只是一个例子, 可以根据你的喜好调整)"))));
         gatekeep.append(gatekeep3);
-        MutableComponent gatekeep4 = Component.literal("Baritone Elytra ");
-        MutableComponent red = Component.literal("wants to know the seed");
-        red.setStyle(red.getStyle().withColor(ChatFormatting.RED).withUnderlined(true).withBold(true));
-        gatekeep4.append(red);
-        gatekeep4.append(" of the world you are in. If it doesn't have the correct seed, it will frequently backtrack. It uses the seed to generate terrain far beyond what you can see, since terrain obstacles in the Nether can be much larger than your render distance. ");
+        MutableComponent gatekeep4 = Component.literal("用于下界的男中音鞘翅想知道你所在世界的种子. ");
+        MutableComponent red1 = Component.literal("如果没有正确的种子");
+        red1.setStyle(red1.getStyle().withColor(ChatFormatting.RED).withUnderlined(true).withBold(true));
+        gatekeep4.append(red1);
+        gatekeep4.append(", ");
+        MutableComponent red2 = Component.literal("它经常会回溯");
+        red2.setStyle(red2.getStyle().withColor(ChatFormatting.RED).withUnderlined(true).withBold(true));
+        gatekeep4.append(red2);
+        gatekeep4.append("它利用种子生成远超你能看到的地形, 因为下界中的地形障碍物可能远大于你的渲染距离");
         gatekeep.append(gatekeep4);
         gatekeep.append("\n");
-        if (detectOn2b2t()) {
-            MutableComponent gatekeep5 = Component.literal("It looks like you're on 2b2t. ");
-            gatekeep5.append(suggest2b2tSeeds());
-            if (!Baritone.settings().elytraPredictTerrain.value) {
-                gatekeep5.append(Baritone.settings().prefix.value + "elytraPredictTerrain is currently disabled. ");
-            } else {
-                if (Baritone.settings().elytraNetherSeed.value == NEW_2B2T_SEED) {
-                    gatekeep5.append("You are using the newer seed. ");
-                } else if (Baritone.settings().elytraNetherSeed.value == OLD_2B2T_SEED) {
-                    gatekeep5.append("You are using the older seed. ");
-                } else {
-                    gatekeep5.append("Defaulting to the newer seed. ");
-                    Baritone.settings().elytraNetherSeed.value = NEW_2B2T_SEED;
-                }
-            }
+        if (Baritone.settings().elytraPredictTerrain.value) {
+            MutableComponent gatekeep5 = Component.literal("Baritone 鞘翅预测地形时假设 " + Baritone.settings().elytraNetherSeed.value + " 是正确的种子, 将它改为 " + Baritone.settings().prefix.value + "set elytraNetherSeed seedgoeshere, 或者禁用 " + Baritone.settings().prefix.value + "set elytraPredictTerrain false");
             gatekeep.append(gatekeep5);
         } else {
-            if (Baritone.settings().elytraNetherSeed.value == NEW_2B2T_SEED) {
-                MutableComponent gatekeep5 = Component.literal("Baritone doesn't know the seed of your world. Set it with: " + Baritone.settings().prefix.value + "set elytraNetherSeed seedgoeshere\n");
-                gatekeep5.append("For the time being, elytraPredictTerrain is defaulting to false since the seed is unknown.");
-                gatekeep.append(gatekeep5);
-                Baritone.settings().elytraPredictTerrain.value = false;
-            } else {
-                if (Baritone.settings().elytraPredictTerrain.value) {
-                    MutableComponent gatekeep5 = Component.literal("Baritone Elytra is predicting terrain assuming that " + Baritone.settings().elytraNetherSeed.value + " is the correct seed. Change that with " + Baritone.settings().prefix.value + "set elytraNetherSeed seedgoeshere, or disable it with " + Baritone.settings().prefix.value + "set elytraPredictTerrain false");
-                    gatekeep.append(gatekeep5);
-                } else {
-                    MutableComponent gatekeep5 = Component.literal("Baritone Elytra is not predicting terrain. If you don't know the seed, this is the correct thing to do. If you do know the seed, input it with " + Baritone.settings().prefix.value + "set elytraNetherSeed seedgoeshere, and then enable it with " + Baritone.settings().prefix.value + "set elytraPredictTerrain true");
-                    gatekeep.append(gatekeep5);
-                }
-            }
+            MutableComponent gatekeep5 = Component.literal("Baritone 鞘翅并不是在预测地形. 如果你知道种子, 输入如 " + Baritone.settings().prefix.value + "set elytraNetherSeed seedgoeshere, 然后用 " + Baritone.settings().prefix.value + "set elytraPredictTerrain true");
+            gatekeep.append(gatekeep5);
         }
         logDirect(gatekeep);
     }
-
-    private boolean detectOn2b2t() {
-        ServerData data = ctx.minecraft().getCurrentServer();
-        return data != null && data.ip.toLowerCase().contains("2b2t.org");
-    }
-
-    private static final long OLD_2B2T_SEED = -4100785268875389365L;
-    private static final long NEW_2B2T_SEED = 146008555100680L;
 
     @Override
     public Stream<String> tabComplete(String label, IArgConsumer args) throws CommandException {
@@ -196,19 +135,19 @@ public class ElytraCommand extends Command {
 
     @Override
     public String getShortDesc() {
-        return "elytra time";
+        return "鞘翅时间";
     }
 
     @Override
     public List<String> getLongDesc() {
         return Arrays.asList(
-                "The elytra command tells baritone to, in the nether, automatically fly to the current goal.",
+                "鞘翅指令告诉Baritone在下界自动飞向当前目标",
                 "",
-                "Usage:",
-                "> elytra - fly to the current goal",
-                "> elytra reset - Resets the state of the process, but will try to keep flying to the same goal.",
-                "> elytra repack - Queues all of the chunks in render distance to be given to the native library.",
-                "> elytra supported - Tells you if baritone ships a native library that is compatible with your PC."
+                "用法:",
+                "> elytra - 飞到当前目标",
+                "> elytra reset - 重置状态, 但会尝试继续飞向同一目标",
+                "> elytra repack - 将渲染距离内的所有区块排队, 以提供给本地库",
+                "> elytra supported - 告诉你Baritone是否提供与你的电脑兼容的本地库"
         );
     }
 
@@ -216,9 +155,8 @@ public class ElytraCommand extends Command {
         final String osArch = System.getProperty("os.arch");
         final String osName = System.getProperty("os.name");
         return String.format(
-                "Failed loading native library. Your CPU is %s and your operating system is %s. " +
-                        "Supported architectures are 64 bit x86, and 64 bit ARM. Supported operating systems are Windows, " +
-                        "Linux, and Mac",
+                "加载本地库失败. 您的 CPU 是 %s, 操作系统是 %s" +
+                        "支持的架构有64位x86和64位ARM, 支持的操作系统有Windows、Linux和Mac",
                 osArch, osName
         );
     }

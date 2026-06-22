@@ -47,19 +47,19 @@ public class ExploreFilterCommand extends Command {
             if (args.getString().equalsIgnoreCase("invert")) {
                 invert = true;
             } else {
-                throw new CommandInvalidTypeException(args.consumed(), "either \"invert\" or nothing");
+                throw new CommandInvalidTypeException(args.consumed(), "要么\"invert\", 要么什么都不做");
             }
         }
         try {
             baritone.getExploreProcess().applyJsonFilter(file.toPath().toAbsolutePath(), invert);
         } catch (NoSuchFileException e) {
-            throw new CommandInvalidStateException("File not found");
+            throw new CommandInvalidStateException("未找到文件");
         } catch (JsonSyntaxException e) {
-            throw new CommandInvalidStateException("Invalid JSON syntax");
+            throw new CommandInvalidStateException("无效的JSON语法");
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
-        logDirect(String.format("Explore filter applied. Inverted: %s", Boolean.toString(invert)));
+        logDirect(String.format("探索已应用筛选, 倒置: %s", Boolean.toString(invert)));
     }
 
     @Override
@@ -72,20 +72,20 @@ public class ExploreFilterCommand extends Command {
 
     @Override
     public String getShortDesc() {
-        return "Explore chunks from a json";
+        return "从Json中探索区块";
     }
 
     @Override
     public List<String> getLongDesc() {
         return Arrays.asList(
-                "Apply an explore filter before using explore, which tells the explore process which chunks have been explored/not explored.",
+                "在使用探索之前应用探索过滤器, 它会告诉探索过程哪些区块已经探索过, 哪些还没探索",
                 "",
-                "The JSON file will follow this format: [{\"x\":0,\"z\":0},...]",
+                "JSON文件将遵循此格式: [{\"x\":0,\"z\":0},...]",
                 "",
-                "If 'invert' is specified, the chunks listed will be considered NOT explored, rather than explored.",
+                "如果指定为\"invert\", 列出的区块将被视为未探索, 而非探索",
                 "",
-                "Usage:",
-                "> explorefilter <path> [invert] - Load the JSON file referenced by the specified path. If invert is specified, it must be the literal word 'invert'."
+                "用法:",
+                "> explorefilter <path> [invert] - 加载指定路径引用的JSON文件. 如果要指定 invert, 必须是字面上的\"invert\"一词"
         );
     }
 }

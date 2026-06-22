@@ -20,6 +20,6 @@ package baritone.api.command.exception;
 public class CommandTooManyArgumentsException extends CommandErrorMessageException {
 
     public CommandTooManyArgumentsException(int maxArgs) {
-        super(String.format("Too many arguments (expected at most %d)", maxArgs));
+        super(String.format("参数过多 (只要%d个)", maxArgs));
     }
 }

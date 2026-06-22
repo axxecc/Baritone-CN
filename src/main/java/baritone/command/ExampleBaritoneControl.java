@@ -80,8 +80,9 @@ public class ExampleBaritoneControl extends Behavior implements Helper {
             MutableComponent component = Component.literal(String.format("> %s", toDisplay));
             component.setStyle(component.getStyle()
                     .withColor(ChatFormatting.WHITE)
-                    .withHoverEvent(new HoverEvent.ShowText(
-                            Component.literal("Click to rerun command")
+                    .withHoverEvent(new HoverEvent(
+                            HoverEvent.Action.SHOW_TEXT,
+                            Component.literal("点击返回命令")
                     ))
                     .withClickEvent(new ClickEvent.RunCommand(
                             FORCE_COMMAND_PREFIX + msg

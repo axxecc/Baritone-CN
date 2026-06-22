@@ -36,7 +36,7 @@ public class ReloadAllCommand extends Command {
     public void execute(String label, IArgConsumer args) throws CommandException {
         args.requireMax(0);
         ctx.worldData().getCachedWorld().reloadAllFromDisk();
-        logDirect("Reloaded");
+        logDirect("重载");
     }
 
     @Override
@@ -46,15 +46,15 @@ public class ReloadAllCommand extends Command {
 
     @Override
     public String getShortDesc() {
-        return "Reloads Baritone's cache for this world";
+        return "重新加载Baritone的缓存以适应这个世界";
     }
 
     @Override
     public List<String> getLongDesc() {
         return Arrays.asList(
-                "The reloadall command reloads Baritone's world cache.",
+                "reloadall命令会重新加载Baritone的世界缓存",
                 "",
-                "Usage:",
+                "用法:",
                 "> reloadall"
         );
     }

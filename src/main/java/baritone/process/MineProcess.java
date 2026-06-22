@@ -78,23 +78,23 @@ public final class MineProcess extends BaritoneProcessHelper implements IMinePro
                     .filter(stack -> filter.has(stack))
                     .mapToInt(ItemStack::getCount).sum();
             if (curr >= desiredQuantity) {
-                logDirect("Have " + curr + " valid items");
+                logDirect("拥有 " + curr + " 有效物品");
                 cancel();
                 return null;
             }
         }
         if (calcFailed) {
             if (!knownOreLocations.isEmpty() && Baritone.settings().blacklistClosestOnFailure.value) {
-                logDirect("Unable to find any path to " + filter + ", blacklisting presumably unreachable closest instance...");
+                logDirect("找不到任何路径前往 " + filter + ", 将可能无法访问的最接近实例列入黑名单...");
                 if (Baritone.settings().notificationOnMineFail.value) {
-                    logNotification("Unable to find any path to " + filter + ", blacklisting presumably unreachable closest instance...", true);
+                    logNotification("找不到任何路径前往 " + filter + ", 将可能无法访问的最接近实例列入黑名单...", true);
                 }
                 knownOreLocations.stream().min(Comparator.comparingDouble(ctx.playerFeet()::distSqr)).ifPresent(blacklist::add);
                 knownOreLocations.removeIf(blacklist::contains);
             } else {
-                logDirect("Unable to find any path to " + filter + ", canceling mine");
+                logDirect("找不到任何路径前往 " + filter + ", 取消了Mine");
                 if (Baritone.settings().notificationOnMineFail.value) {
-                    logNotification("Unable to find any path to " + filter + ", canceling mine", true);
+                    logNotification("找不到任何路径前往 " + filter + ", 取消了Mine", true);
                 }
                 cancel();
                 return null;
@@ -235,9 +235,9 @@ public final class MineProcess extends BaritoneProcessHelper implements IMinePro
         List<BlockPos> locs = searchWorld(context, filter, Baritone.settings().mineMaxOreLocationsCount.value, already, blacklist, dropped);
         locs.addAll(dropped);
         if (locs.isEmpty() && !Baritone.settings().exploreForBlocks.value) {
-            logDirect("No locations for " + filter + " known, cancelling");
+            logDirect("目前没有已知的 " + filter + " 位置, 正在取消");
             if (Baritone.settings().notificationOnMineFail.value) {
-                logNotification("No locations for " + filter + " known, cancelling", true);
+                logNotification("目前没有已知的 " + filter + " 位置, 正在取消", true);
             }
             cancel();
             return;
@@ -529,7 +529,7 @@ public final class MineProcess extends BaritoneProcessHelper implements IMinePro
                     .filter(e -> Baritone.settings().allowBreakAnyway.value.contains(e.getBlock()))
                     .toArray(BlockOptionalMeta[]::new));
             if (f.blocks().isEmpty()) {
-                logDirect("Unable to mine when allowBreak is false and target block is not in allowBreakAnyway!");
+                logDirect("当 allowBreak 为 false 且目标方块不在 allowBreakAnyway 时无法挖矿!");
                 return null;
             }
             return f;

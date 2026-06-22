@@ -25,6 +25,7 @@ import baritone.api.process.PathingCommandType;
 import baritone.utils.BaritoneProcessHelper;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
 
 /**
  * As set by ExampleBaritoneControl or something idk
@@ -59,7 +60,11 @@ public final class CustomGoalProcess extends BaritoneProcessHelper implements IC
         this.goal = goal;
         this.mostRecentGoal = goal;
         if (baritone.getElytraProcess().isActive()) {
-            baritone.getElytraProcess().pathTo(goal);
+            try {
+                baritone.getElytraProcess().pathTo(goal);
+            } catch (IllegalArgumentException e) {
+                logDirect("没能更新鞘翅目标, 因为: " + e.getMessage(), ChatFormatting.RED);
+            }
         }
         if (this.state == State.NONE) {
             this.state = State.GOAL_SET;
@@ -112,13 +117,13 @@ public final class CustomGoalProcess extends BaritoneProcessHelper implements IC
                         }
                     }
                     if (Baritone.settings().notificationOnPathComplete.value) {
-                        logNotification("Pathing complete", false);
+                        logNotification("路径完成", false);
                     }
                     return new PathingCommand(this.goal, PathingCommandType.CANCEL_AND_SET_GOAL);
                 }
                 return new PathingCommand(this.goal, PathingCommandType.SET_GOAL_AND_PATH);
             default:
-                throw new IllegalStateException("Unexpected state " + this.state);
+                throw new IllegalStateException("意外状态 " + this.state);
         }
     }
 
@@ -130,7 +135,7 @@ public final class CustomGoalProcess extends BaritoneProcessHelper implements IC
 
     @Override
     public String displayName0() {
-        return "Custom Goal " + this.goal;
+        return "自定义目标 " + this.goal;
     }
 
     protected enum State {

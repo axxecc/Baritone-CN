@@ -346,9 +346,9 @@ public final class FarmProcess extends BaritoneProcessHelper implements IFarmPro
         }
 
         if (calcFailed) {
-            logDirect("Farm failed");
+            logDirect("耕作失败");
             if (Baritone.settings().notificationOnFarmFail.value) {
-                logNotification("Farm failed", true);
+                logNotification("耕作失败", true);
             }
             onLostControl();
             return new PathingCommand(null, PathingCommandType.REQUEST_PAUSE);
@@ -392,9 +392,9 @@ public final class FarmProcess extends BaritoneProcessHelper implements IFarmPro
             }
         }
         if (goalz.isEmpty()) {
-            logDirect("Farm failed");
+            logDirect("耕作失败");
             if (Baritone.settings().notificationOnFarmFail.value) {
-                logNotification("Farm failed", true);
+                logNotification("耕作失败", true);
             }
             onLostControl();
             return new PathingCommand(null, PathingCommandType.REQUEST_PAUSE);
@@ -409,6 +409,6 @@ public final class FarmProcess extends BaritoneProcessHelper implements IFarmPro
 
     @Override
     public String displayName0() {
-        return "Farming";
+        return "耕作";
     }
 }
